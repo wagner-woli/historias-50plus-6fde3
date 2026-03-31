@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Histórias da Minha Vida · IA Geração 50+</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --ouro: #C9922A;
+    --ouro-claro: #F5D98A;
+    --marrom: #3E2206;
+    --creme: #FAF6EE;
+    --cinza-texto: #4A3B2C;
+    --verde-suave: #5A7A5B;
+    --sombra: rgba(62,34,6,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--creme);
+    color: var(--cinza-texto);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--marrom) 0%, #6B3A12 100%);
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(201,146,42,0.15);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(201,146,42,0.10);
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--ouro);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: clamp(24px, 5vw, 36px);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  header h1 em {
+    color: var(--ouro-claro);
+    font-style: italic;
+  }
+
+  header p {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    font-weight: 300;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* AUTH BAR */
+  .auth-bar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .auth-bar .user-name {
+    color: var(--ouro-claro);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .auth-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .auth-btn:hover {
+    background: rgba(255,255,255,0.25);
+  }
+  .auth-btn-google {
+    background: white;
+    color: var(--marrom);
+    border-color: white;
+  }
+  .auth-btn-google:hover {
+    background: var(--ouro-claro);
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    top: -1px;
+  }
+  .nav-tab {
+    flex: 1;
+    max-width: 200px;
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #EDE6DA;
+    color: #8A7A6A;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: 'Lato', sans-serif;
+    transition: all 0.2s;
+  }
+  .nav-tab:first-child { border-radius: 0 0 0 12px; }
+  .nav-tab:last-child { border-radius: 0 0 12px 0; }
+  .nav-tab.ativo {
+    background: var(--creme);
+    color: var(--marrom);
+    border-bottom-color: var(--ouro);
+  }
+  .nav-tab:hover:not(.ativo) {
+    background: #E8E0D2;
+  }
+  .nav-tab .tab-icon { margin-right: 6px; }
+  .nav-tab .tab-badge {
+    background: var(--ouro);
+    color: white;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.ativa { display: block; }
+
+  /* TEMAS */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ouro);
+    margin-bottom: 10px;
+  }
+
+  .temas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .tema-btn {
+    background: white;
+    border: 2px solid #E8DDCC;
+    color: var(--cinza-texto);
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Lato', sans-serif;
+  }
+  .tema-btn:hover, .tema-btn.ativo {
+    background: var(--ouro);
+    border-color: var(--ouro);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201,146,42,0.3);
+  }
+
+  /* CARD INPUT */
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px var(--sombra);
+    margin-bottom: 20px;
+    border: 1px solid rgba(201,146,42,0.15);
+  }
+
+  .card label {
+    display: block;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--marrom);
+    margin-bottom: 4px;
+  }
+  .card .sublabel {
+    font-size: 13px;
+    color: #8A7A6A;
+    margin-bottom: 12px;
+  }
+
+  textarea {
+    width: 100%;
+    border: 2px solid #E8DDCC;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
+    color: var(--cinza-texto);
+    resize: vertical;
+    min-height: 110px;
+    transition: border 0.2s;
+    background: #FDFAF5;
+    line-height: 1.6;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--ouro);
+    background: white;
+  }
+  textarea::placeholder { color: #B5A898; }
+
+  /* ESTILOS */
+  .estilos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .estilo-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 2px solid #E8DDCC;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #FDFAF5;
+  }
+  .estilo-opt:hover { border-color: var(--ouro); background: white; }
+  .estilo-opt.ativo { border-color: var(--ouro); background: #FFF8EC; }
+  .estilo-opt input { display: none; }
+  .estilo-icon { font-size: 18px; }
+  .estilo-text { font-size: 13px; font-weight: 700; color: var(--marrom); }
+  .estilo-desc { font-size: 11px; color: #8A7A6A; }
+
+  /* BOTAO */
+  .btn-gerar {
+    width: 100%;
+    background: linear-gradient(135deg, var(--ouro) 0%, #A8721A 100%);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(201,146,42,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn-gerar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(201,146,42,0.5);
+  }
+  .btn-gerar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* LOADING */
+  .loading-area {
+    display: none;
+    text-align: center;
+    padding: 32px 20px;
+  }
+  .loading-area.visivel { display: block; }
+
+  .caneta {
+    font-size: 36px;
+    display: block;
+    animation: escrever 1.2s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes escrever {
+    0%,100% { transform: rotate(-10deg) translateX(-4px); }
+    50% { transform: rotate(10deg) translateX(4px); }
+  }
+
+  .loading-texto {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ouro);
+    margin-bottom: 8px;
+  }
+  .loading-sub { font-size: 13px; color: #8A7A6A; }
+
+  /* RESULTADO */
+  .resultado-area { display: none; }
+  .resultado-area.visivel { display: block; }
+
+  .resultado-card {
+    background: linear-gradient(160deg, #FFFDF7 0%, #FFF8EC 100%);
+    border: 2px solid var(--ouro-claro);
+    border-radius: 16px;
+    padding: 28px 24px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(201,146,42,0.12);
+    margin-bottom: 16px;
+  }
+  .resultado-card::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px; left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    color: var(--ouro-claro);
+    line-height: 1;
+  }
+
+  .resultado-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--marrom);
+    margin-bottom: 16px;
+    padding-top: 12px;
+  }
+
+  .resultado-texto {
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--cinza-texto);
+    white-space: pre-wrap;
+  }
+
+  .acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-acao {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-copiar {
+    background: white;
+    border-color: var(--ouro);
+    color: var(--ouro);
+  }
+  .btn-copiar:hover { background: #FFF8EC; }
+  .btn-salvar {
+    background: var(--verde-suave);
+    border-color: var(--verde-suave);
+    color: white;
+  }
+  .btn-salvar:hover { background: #4A6A4B; }
+  .btn-salvar:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-nova {
+    background: var(--marrom);
+    border-color: var(--marrom);
+    color: white;
+  }
+  .btn-nova:hover { background: #5A3010; }
+
+  /* INFO FOOTER */
+  .ia-info {
+    background: #F0F7F0;
+    border: 1px solid #C8DEC8;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .ia-info-icon { font-size: 20px; flex-shrink: 0; }
+  .ia-info-texto { font-size: 13px; color: #3A5A3A; line-height: 1.5; }
+  .ia-info-texto strong { color: var(--verde-suave); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--marrom);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.3s;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ERRO */
+  .erro-card {
+    background: #FFF0F0;
+    border: 2px solid #FFCCCC;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    display: none;
+  }
+  .erro-card.visivel { display: block; }
+  .erro-card p { color: #C0392B; font-size: 15px; line-height: 1.5; }
+
+  /* ========== MEU ACERVO ========== */
+  .acervo-vazio {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .acervo-vazio-icon { font-size: 48px; margin-bottom: 16px; }
+  .acervo-vazio h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--marrom);
+    margin-bottom: 8px;
+  }
+  .acervo-vazio p {
+    color: #8A7A6A;
+    font-size: 15px;
+    max-width: 320px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
+  }
+  .acervo-login-hint {
+    background: #FFF8EC;
+    border: 1px solid var(--ouro-claro);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--marrom);
+    font-size: 14px;
+    max-width: 360px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  .acervo-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .acervo-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 3px 16px var(--sombra);
+    border: 1px solid rgba(201,146,42,0.12);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .acervo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(201,146,42,0.2);
+  }
+
+  .acervo-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .acervo-card-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: var(--marrom);
+    flex: 1;
+  }
+
+  .acervo-card-estilo {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ouro);
+    background: #FFF8EC;
+    padding: 3px 10px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  .acervo-card-preview {
+    font-size: 14px;
+    color: #8A7A6A;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .acervo-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #B5A898;
+  }
+
+  .acervo-card-data { display: flex; align-items: center; gap: 4px; }
+
+  /* MODAL HISTORIA */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(62,34,6,0.6);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-overlay.aberto { display: flex; }
+
+  .modal-historia {
+    background: var(--creme);
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 32px 28px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(62,34,6,0.3);
+  }
+
+  .modal-fechar {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #8A7A6A;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-fechar:hover { background: rgba(0,0,0,0.08); }
+
+  .modal-historia-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--marrom);
+    margin-bottom: 6px;
+    padding-right: 40px;
+  }
+
+  .modal-historia-meta {
+    font-size: 13px;
+    color: #8A7A6A;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 16px;
+  }
+
+  .modal-historia-corpo {
+    font-size: 16px;
+    line-height: 2;
+    color: var(--cinza-texto);
+    white-space: pre-wrap;
+    margin-bottom: 24px;
+  }
+
+  .modal-historia-original {
+    background: #F0EDE7;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #8A7A6A;
+    line-height: 1.5;
+  }
+  .modal-historia-original strong {
+    display: block;
+    color: var(--marrom);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .acervo-counter {
+    text-align: center;
+    font-size: 13px;
+    color: #8A7A6A;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #E8DDCC;
+  }
+  .acervo-counter strong { color: var(--ouro); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">✨ IA Geração 50+</div>
+  <h1>Histórias da <em>Minha Vida</em></h1>
+  <p>Escreva um momento marcante e a IA transforma em uma bela história para guardar</p>
+
+  <div class="auth-bar" id="authBar">
+    <button class="auth-btn auth-btn-google" id="btnLogin" onclick="loginGoogle()">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 019.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 000 24c0 3.77.9 7.35 2.56 10.52l7.97-5.93z"/><path fill="#EA4335" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 5.93C6.51 42.62 14.62 48 24 48z"/></svg>
+      Entrar com Google
+    </button>
+    <div id="userLogado" style="display:none;">
+      <span class="user-name" id="userName"></span>
+      <button class="auth-btn" onclick="logout()">Sair</button>
+    </div>
+  </div>
+</header>
+
+<div class="nav-tabs" id="navTabs">
+  <button class="nav-tab ativo" onclick="trocarView('criar')" id="tabCriar">
+    <span class="tab-icon">✍️</span> Criar
+  </button>
+  <button class="nav-tab" onclick="trocarView('acervo')" id="tabAcervo">
+    <span class="tab-icon">📚</span> Meu Acervo <span class="tab-badge" id="acervoBadge" style="display:none">0</span>
+  </button>
+</div>
+
+<main>
+
+  <!-- ======= VIEW: CRIAR ======= -->
+  <div class="view ativa" id="viewCriar">
+
+    <div class="section-label">💡 Escolha um tema ou escreva o seu</div>
+    <div class="temas" id="temas">
+      <button class="tema-btn" data-texto="A época da minha infância, brincando na rua com os amigos do bairro, sem tecnologia e cheio de aventuras">🏘️ Infância no bairro</button>
+      <button class="tema-btn" data-texto="O primeiro dia no meu emprego, cheio de nervosismo e expectativas sobre o futuro profissional">💼 Primeiro emprego</button>
+      <button class="tema-btn" data-texto="O dia do meu casamento, as emoções, os preparativos e o momento especial de dizer sim">💍 Dia do casamento</button>
+      <button class="tema-btn" data-texto="A chegada do meu filho ou neto, a emoção daquele momento único e transformador">👶 Chegada de um filho</button>
+      <button class="tema-btn" data-texto="Uma viagem inesquecível que fiz, os lugares visitados e as pessoas que conheci">✈️ Viagem inesquecível</button>
+      <button class="tema-btn" data-texto="Um professor ou mentor que marcou minha vida e mudou minha forma de ver o mundo">🎓 Professor marcante</button>
+    </div>
+
+    <div class="card">
+      <label for="memoria">Conte seu momento</label>
+      <div class="sublabel">Quanto mais detalhes você der, mais rica será a história</div>
+      <textarea id="memoria" placeholder="Ex: Lembro que aos 10 anos eu acordava cedo para pegar manga no quintal do vizinho com meus irmãos. Era uma aventura que hoje parece um sonho..."></textarea>
+
+      <div style="margin-top:18px;">
+        <div class="section-label">🖊️ Estilo da história</div>
+        <div class="estilos" id="estilos">
+          <label class="estilo-opt ativo" data-val="nostalgico">
+            <input type="radio" name="estilo" value="nostalgico" checked>
+            <span class="estilo-icon">🌅</span>
+            <div><div class="estilo-text">Nostálgico</div><div class="estilo-desc">Saudade e emoção</div></div>
+          </label>
+          <label class="estilo-opt" data-val="poetico">
+            <input type="radio" name="estilo" value="poetico">
+            <span class="estilo-icon">🌸</span>
+            <div><div class="estilo-text">Poético</div><div class="estilo-desc">Belo e sensível</div></div>
+          </label>
+          <label class="estilo-opt" data-val="bem-humorado">
+            <input type="radio" name="estilo" value="bem-humorado">
+            <span class="estilo-icon">😄</span>
+            <div><div class="estilo-text">Bem-humorado</div><div class="estilo-desc">Leve e divertido</div></div>
+          </label>
+          <label class="estilo-opt" data-val="inspirador">
+            <input type="radio" name="estilo" value="inspirador">
+            <span class="estilo-icon">⭐</span>
+            <div><div class="estilo-text">Inspirador</div><div class="estilo-desc">Que motiva outros</div></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-gerar" id="btnGerar" onclick="gerarHistoria()">
+      <span>✍️</span> Transformar em História
+    </button>
+
+    <div class="loading-area" id="loading">
+      <span class="caneta">✍️</span>
+      <div class="loading-texto">A IA está escrevendo sua história...</div>
+      <div class="loading-sub">Isso leva alguns segundos</div>
+    </div>
+
+    <div class="erro-card" id="erroCard">
+      <p>😔 Ops! Algo deu errado. Verifique sua conexão e tente novamente.</p>
+    </div>
+
+    <div class="resultado-area" id="resultado">
+      <div class="resultado-card">
+        <div class="resultado-titulo" id="tituloHistoria"></div>
+        <div class="resultado-texto" id="textoHistoria"></div>
+      </div>
+      <div class="acoes">
+        <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar</button>
+        <button class="btn-acao btn-salvar" id="btnSalvar" onclick="salvarHistoria()">💾 Salvar</button>
+        <button class="btn-acao btn-nova" onclick="novaHistoria()">🔄 Nova</button>
+      </div>
+    </div>
+
+    <div class="ia-info">
+      <span class="ia-info-icon">🤖</span>
+      <div class="ia-info-texto">
+        <strong>Como funciona?</strong> Esta aplicação usa Inteligência Artificial (Claude, da Anthropic) para transformar suas memórias em histórias. Tudo acontece em segundos — a IA lê o que você escreveu e cria um texto único só para você.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======= VIEW: MEU ACERVO ======= -->
+  <div class="view" id="viewAcervo">
+    <div id="acervoConteudo"></div>
+  </div>
+
+</main>
+
+<!-- MODAL HISTORIA COMPLETA -->
+<div class="modal-overlay" id="modalHistoria" onclick="if(event.target===this)fecharModal()">
+  <div class="modal-historia">
+    <button class="modal-fechar" onclick="fecharModal()">✕</button>
+    <div class="modal-historia-titulo" id="modalTitulo"></div>
+    <div class="modal-historia-meta" id="modalMeta"></div>
+    <div class="modal-historia-corpo" id="modalCorpo"></div>
+    <div class="modal-historia-original" id="modalOriginal"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ========== SUPABASE CONFIG ==========
+  const SUPABASE_URL = 'https://otesxnhbwujhdbxjzjiw.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BycfL_RDGy7bdvCJmVJG4w_Zp6wxizv';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+  let historiasCache = [];
+
+  // ========== AUTH ==========
+  async function checkAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      setUser(session.user);
+    }
+  }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      setUser(session.user);
+      if (event === 'SIGNED_IN') {
+        carregarAcervo();
+      }
+    } else {
+      currentUser = null;
+      document.getElementById('btnLogin').style.display = '';
+      document.getElementById('userLogado').style.display = 'none';
+      document.getElementById('acervoBadge').style.display = 'none';
+    }
+  });
+
+  function setUser(user) {
+    currentUser = user;
+    const nome = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário';
+    document.getElementById('userName').textContent = nome;
+    document.getElementById('btnLogin').style.display = 'none';
+    document.getElementById('userLogado').style.display = 'flex';
+    carregarAcervo();
+  }
+
+  async function loginGoogle() {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) {
+      showToast('Erro ao fazer login');
+      console.error(error);
+    }
+  }
+
+  async function logout() {
+    await sb.auth.signOut();
+    currentUser = null;
+    historiasCache = [];
+    showToast('Você saiu da conta');
+    trocarView('criar');
+  }
+
+  // ========== NAVEGACAO ==========
+  function trocarView(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('ativa'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('ativo'));
+
+    if (view === 'criar') {
+      document.getElementById('viewCriar').classList.add('ativa');
+      document.getElementById('tabCriar').classList.add('ativo');
+    } else {
+      document.getElementById('viewAcervo').classList.add('ativa');
+      document.getElementById('tabAcervo').classList.add('ativo');
+      renderAcervo();
+    }
+  }
+
+  // ========== TEMAS E ESTILOS ==========
+  document.querySelectorAll('.tema-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tema-btn').forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      document.getElementById('memoria').value = btn.dataset.texto;
+    });
+  });
+
+  document.querySelectorAll('.estilo-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.estilo-opt').forEach(o => o.classList.remove('ativo'));
+      opt.classList.add('ativo');
+      opt.querySelector('input').checked = true;
+    });
+  });
+
+  function getEstilo() {
+    return document.querySelector('input[name="estilo"]:checked')?.value || 'nostalgico';
+  }
+
+  const estilosDesc = {
+    nostalgico: 'com tom nostálgico, cheio de saudade, emoção e carinho pelo passado',
+    poetico: 'com linguagem poética, bela e sensível, usando metáforas e imagens vívidas',
+    'bem-humorado': 'com tom leve, bem-humorado e divertido, trazendo alegria e leveza',
+    inspirador: 'com tom inspirador e motivador, que possa tocar e motivar quem lê'
+  };
+
+  // ========== GERAR HISTORIA ==========
+  async function gerarHistoria() {
+    const memoria = document.getElementById('memoria').value.trim();
+    if (!memoria || memoria.length < 20) {
+      alert('Por favor, escreva um pouco mais sobre sua memória 😊');
+      return;
+    }
+
+    const estilo = getEstilo();
+    const descEstilo = estilosDesc[estilo];
+
+    document.getElementById('btnGerar').disabled = true;
+    document.getElementById('loading').classList.add('visivel');
+    document.getElementById('resultado').classList.remove('visivel');
+    document.getElementById('erroCard').classList.remove('visivel');
+
+    const prompt = `Você é um escritor sensível e talentoso especializado em transformar memórias reais em histórias tocantes.
+
+A pessoa compartilhou esta memória:
+"${memoria}"
+
+Escreva uma história ${descEstilo}.
+
+INSTRUÇÕES:
+- Primeiro, crie um título bonito para a história (uma linha)
+- Depois escreva a história em 3 a 4 parágrafos
+- Escreva na primeira pessoa, como se fosse a própria pessoa contando
+- Use linguagem simples, acolhedora e acessível para adultos acima de 50 anos
+- Enriqueça com detalhes sensoriais (cheiros, sons, sensações) que tornam a história mais viva
+- A história deve ter entre 200 e 280 palavras
+- Termine com uma frase reflexiva e significativa
+
+Formato de resposta:
+TÍTULO: [título aqui]
+
+[história aqui]`;
+
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      const data = await resp.json();
+      const texto = data.content?.[0]?.text || '';
+
+      if (!texto) throw new Error('Sem resposta');
+
+      const linhas = texto.trim().split('\n');
+      let titulo = '';
+      let corpo = '';
+
+      const idxTitulo = linhas.findIndex(l => l.startsWith('TÍTULO:'));
+      if (idxTitulo !== -1) {
+        titulo = linhas[idxTitulo].replace('TÍTULO:', '').trim();
+        corpo = linhas.slice(idxTitulo + 1).join('\n').trim();
+      } else {
+        titulo = 'Minha História';
+        corpo = texto.trim();
+      }
+
+      document.getElementById('tituloHistoria').textContent = titulo;
+      document.getElementById('textoHistoria').textContent = corpo;
+      document.getElementById('resultado').classList.add('visivel');
+
+      // Habilitar/desabilitar botao salvar
+      const btnSalvar = document.getElementById('btnSalvar');
+      if (currentUser) {
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = '💾 Salvar';
+      } else {
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = '💾 Salvar (login)';
+      }
+
+    } catch (e) {
+      document.getElementById('erroCard').classList.add('visivel');
+    } finally {
+      document.getElementById('loading').classList.remove('visivel');
+      document.getElementById('btnGerar').disabled = false;
+    }
+  }
+
+  // ========== SALVAR HISTORIA ==========
+  async function salvarHistoria() {
+    if (!currentUser) {
+      showToast('Faça login para salvar suas histórias');
+      loginGoogle();
+      return;
+    }
+
+    const titulo = document.getElementById('tituloHistoria').textContent;
+    const corpo = document.getElementById('textoHistoria').textContent;
+    const memoria = document.getElementById('memoria').value.trim();
+    const estilo = getEstilo();
+
+    const btnSalvar = document.getElementById('btnSalvar');
+    btnSalvar.disabled = true;
+    btnSalvar.textContent = '⏳ Salvando...';
+
+    const { data, error } = await sb
+      .from('historias')
+      .insert({
+        user_id: currentUser.id,
+        titulo: titulo,
+        corpo: corpo,
+        memoria_original: memoria,
+        estilo: estilo,
+        publico: 'adulto',
+        visivel: false
+      })
+      .select();
+
+    if (error) {
+      console.error('Erro ao salvar:', error);
+      showToast('Erro ao salvar. Tente novamente.');
+      btnSalvar.disabled = false;
+      btnSalvar.textContent = '💾 Salvar';
+    } else {
+      showToast('✅ História salva no seu acervo!');
+      btnSalvar.textContent = '✅ Salva!';
+      btnSalvar.disabled = true;
+      carregarAcervo();
+    }
+  }
+
+  // ========== MEU ACERVO ==========
+  async function carregarAcervo() {
+    if (!currentUser) return;
+
+    const { data, error } = await sb
+      .from('historias')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('criado_em', { ascending: false });
+
+    if (!error && data) {
+      historiasCache = data;
+      const badge = document.getElementById('acervoBadge');
+      if (data.length > 0) {
+        badge.textContent = data.length;
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  }
+
+  function renderAcervo() {
+    const container = document.getElementById('acervoConteudo');
+
+    if (!currentUser) {
+      container.innerHTML = `
+        <div class="acervo-vazio">
+          <div class="acervo-vazio-icon">📚</div>
+          <h3>Meu Acervo</h3>
+          <p>Faça login para salvar e acessar suas histórias</p>
+          <div class="acervo-login-hint">
+            <strong>💡 Dica:</strong> Ao fazer login, suas histórias ficam salvas e você pode acessá-las de qualquer dispositivo.
+          </div>
+        </div>`;
+      return;
+    }
+
+    if (historiasCache.length === 0) {
+      container.innerHTML = `
+        <div class="acervo-vazio">
+          <div class="acervo-vazio-icon">✨</div>
+          <h3>Nenhuma história ainda</h3>
+          <p>Crie sua primeira história e clique em "Salvar" para guardá-la aqui</p>
+          <button class="btn-gerar" onclick="trocarView('criar')" style="max-width:280px;margin:0 auto;">
+            ✍️ Criar minha primeira história
+          </button>
+        </div>`;
+      return;
+    }
+
+    const estiloEmoji = { nostalgico: '🌅', poetico: '🌸', 'bem-humorado': '😄', inspirador: '⭐' };
+
+    let html = `<div class="acervo-counter">Você tem <strong>${historiasCache.length}</strong> história${historiasCache.length > 1 ? 's' : ''} no seu acervo</div>`;
+    html += '<div class="acervo-lista">';
+
+    historiasCache.forEach((h, i) => {
+      const data = new Date(h.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      const emoji = estiloEmoji[h.estilo] || '📖';
+
+      html += `
+        <div class="acervo-card" onclick="abrirHistoria(${i})">
+          <div class="acervo-card-header">
+            <div class="acervo-card-titulo">${h.titulo || 'Sem título'}</div>
+            <div class="acervo-card-estilo">${emoji} ${h.estilo || ''}</div>
+          </div>
+          <div class="acervo-card-preview">${h.corpo || ''}</div>
+          <div class="acervo-card-footer">
+            <div class="acervo-card-data">📅 ${data}</div>
+          </div>
+        </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function abrirHistoria(index) {
+    const h = historiasCache[index];
+    if (!h) return;
+
+    document.getElementById('modalTitulo').textContent = h.titulo || 'Sem título';
+
+    const data = new Date(h.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    const estiloEmoji = { nostalgico: '🌅', poetico: '🌸', 'bem-humorado': '😄', inspirador: '⭐' };
+    const emoji = estiloEmoji[h.estilo] || '📖';
+    document.getElementById('modalMeta').innerHTML = `<span>${emoji} ${h.estilo || ''}</span> <span>📅 ${data}</span>`;
+
+    document.getElementById('modalCorpo').textContent = h.corpo || '';
+
+    const originalDiv = document.getElementById('modalOriginal');
+    if (h.memoria_original) {
+      originalDiv.innerHTML = `<strong>💭 Memória original</strong>${h.memoria_original}`;
+      originalDiv.style.display = '';
+    } else {
+      originalDiv.style.display = 'none';
+    }
+
+    document.getElementById('modalHistoria').classList.add('aberto');
+  }
+
+  function fecharModal() {
+    document.getElementById('modalHistoria').classList.remove('aberto');
+  }
+
+  // ========== UTILITARIOS ==========
+  function copiarTexto() {
+    const titulo = document.getElementById('tituloHistoria').textContent;
+    const texto = document.getElementById('textoHistoria').textContent;
+    navigator.clipboard.writeText(`${titulo}\n\n${texto}`).then(() => {
+      showToast('✅ Copiado!');
+    });
+  }
+
+  function novaHistoria() {
+    document.getElementById('resultado').classList.remove('visivel');
+    document.getElementById('memoria').value = '';
+    document.getElementById('memoria').focus();
+    document.querySelectorAll('.tema-btn').forEach(b => b.classList.remove('ativo'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ========== INIT ==========
+  checkAuth();
+</script>
+</body>
+</html>
