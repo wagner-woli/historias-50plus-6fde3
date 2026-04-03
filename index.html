@@ -944,18 +944,26 @@ TÍTULO: [título aqui]
 [história aqui]`;
 
     try {
-      const GEMINI_KEY = 'AIzaSyDZyu5EHNzpRzop2VYa8L25M60Ns2K6ttg';
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+      const session = (await sb.auth.getSession()).data.session;
+      if (!session) {
+        alert('Faça login para gerar histórias');
+        document.getElementById('loading').classList.remove('visivel');
+        document.getElementById('btnGerar').disabled = false;
+        return;
+      }
+
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/gerar-historia`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 1000, temperature: 0.8 }
-        })
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ prompt })
       });
 
       const data = await resp.json();
-      const texto = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      if (!resp.ok) throw new Error(data.error || 'Erro na geração');
+      const texto = data.texto || '';
 
       if (!texto) throw new Error('Sem resposta');
 
