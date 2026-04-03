@@ -805,6 +805,14 @@
   let currentUser = null;
   let historiasCache = [];
 
+  // ========== SANITIZACAO ==========
+  function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
   // ========== AUTH ==========
   async function checkAuth() {
     const { data: { session } } = await sb.auth.getSession();
@@ -1039,7 +1047,12 @@ TÍTULO: [título aqui]
       .eq('user_id', currentUser.id)
       .order('criado_em', { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      console.error('Erro ao carregar acervo:', error);
+      showToast('Erro ao carregar suas histórias');
+      return;
+    }
+    if (data) {
       historiasCache = data;
       const badge = document.getElementById('acervoBadge');
       if (data.length > 0) {
@@ -1092,10 +1105,10 @@ TÍTULO: [título aqui]
       html += `
         <div class="acervo-card" onclick="abrirHistoria(${i})">
           <div class="acervo-card-header">
-            <div class="acervo-card-titulo">${h.titulo || 'Sem título'}</div>
-            <div class="acervo-card-estilo">${emoji} ${h.estilo || ''}</div>
+            <div class="acervo-card-titulo">${esc(h.titulo) || 'Sem título'}</div>
+            <div class="acervo-card-estilo">${emoji} ${esc(h.estilo)}</div>
           </div>
-          <div class="acervo-card-preview">${h.corpo || ''}</div>
+          <div class="acervo-card-preview">${esc(h.corpo)}</div>
           <div class="acervo-card-footer">
             <div class="acervo-card-data">📅 ${data}</div>
           </div>
@@ -1115,13 +1128,13 @@ TÍTULO: [título aqui]
     const data = new Date(h.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
     const estiloEmoji = { nostalgico: '🌅', poetico: '🌸', 'bem-humorado': '😄', inspirador: '⭐' };
     const emoji = estiloEmoji[h.estilo] || '📖';
-    document.getElementById('modalMeta').innerHTML = `<span>${emoji} ${h.estilo || ''}</span> <span>📅 ${data}</span>`;
+    document.getElementById('modalMeta').innerHTML = `<span>${emoji} ${esc(h.estilo)}</span> <span>📅 ${data}</span>`;
 
     document.getElementById('modalCorpo').textContent = h.corpo || '';
 
     const originalDiv = document.getElementById('modalOriginal');
     if (h.memoria_original) {
-      originalDiv.innerHTML = `<strong>💭 Memória original</strong>${h.memoria_original}`;
+      originalDiv.innerHTML = `<strong>💭 Memória original</strong>${esc(h.memoria_original)}`;
       originalDiv.style.display = '';
     } else {
       originalDiv.style.display = 'none';
