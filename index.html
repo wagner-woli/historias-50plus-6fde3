@@ -443,7 +443,8 @@
     border-color: var(--marrom);
     color: white;
   }
-  .btn-nova:hover { background: #5A3010; }
+  .btn-nova:hover { background: #4A2B80; }
+  .btn-whatsapp:hover { background: #1DA851 !important; }
 
   /* INFO FOOTER */
   .ia-info {
@@ -813,9 +814,14 @@
         <div class="resultado-titulo" id="tituloHistoria"></div>
         <div class="resultado-texto" id="textoHistoria"></div>
       </div>
+      <div id="audioArea" style="display:none; text-align:center; margin-top:16px;">
+        <audio id="audioPlayer" controls style="width:100%; border-radius:12px;"></audio>
+        <div style="font-size:12px; color:#8A7A6A; margin-top:6px;">Toque para ouvir a história</div>
+      </div>
       <div id="salvoMsg" style="display:none; text-align:center; padding:8px; color:var(--verde-suave); font-size:14px; font-weight:700;">✅ Salva no seu acervo</div>
       <div class="acoes">
         <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar</button>
+        <button class="btn-acao btn-whatsapp" onclick="enviarWhatsApp()" style="background:#25D366; border-color:#25D366; color:white;">💬 WhatsApp</button>
         <button class="btn-acao btn-nova" onclick="novaHistoria()">📖 Criar outra</button>
       </div>
     </div>
@@ -1016,23 +1022,24 @@ TÍTULO: [título aqui]
 
     try {
       const session = (await sb.auth.getSession()).data.session;
-      if (!session) {
-        alert('Faça login para gerar histórias');
-        document.getElementById('loading').classList.remove('visivel');
-        document.getElementById('btnGerar').disabled = false;
-        return;
+      const headers = { 'Content-Type': 'application/json' };
+      if (session) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
       }
 
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/gerar-historia`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify({ prompt })
+        headers,
+        body: JSON.stringify({ prompt, tts: !!session })
       });
 
       const data = await resp.json();
+      if (resp.status === 429) {
+        document.getElementById('loading').classList.remove('visivel');
+        document.getElementById('btnGerar').disabled = false;
+        mostrarConviteLogin();
+        return;
+      }
       if (!resp.ok) throw new Error(data.error || 'Erro na geração');
       const texto = data.texto || '';
 
@@ -1056,8 +1063,22 @@ TÍTULO: [título aqui]
       document.getElementById('resultado').classList.add('visivel');
       document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+      // Audio TTS
+      const audioArea = document.getElementById('audioArea');
+      if (data.audio) {
+        const audioSrc = `data:${data.audioMime || 'audio/mp3'};base64,${data.audio}`;
+        document.getElementById('audioPlayer').src = audioSrc;
+        audioArea.style.display = 'block';
+      } else {
+        audioArea.style.display = 'none';
+      }
+
       if (currentUser) {
         autoSalvar(titulo, corpo, memoria, estilo);
+      } else {
+        document.getElementById('salvoMsg').textContent = '💡 Faça login para salvar suas histórias';
+        document.getElementById('salvoMsg').style.color = 'var(--ouro)';
+        document.getElementById('salvoMsg').style.display = 'block';
       }
 
     } catch (e) {
@@ -1221,10 +1242,29 @@ TÍTULO: [título aqui]
   function novaHistoria() {
     document.getElementById('resultado').classList.remove('visivel');
     document.getElementById('salvoMsg').style.display = 'none';
+    document.getElementById('audioArea').style.display = 'none';
     document.getElementById('memoria').value = '';
     document.querySelectorAll('.tema-btn').forEach(b => b.classList.remove('ativo'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => document.getElementById('memoria').focus(), 400);
+  }
+
+  function enviarWhatsApp() {
+    const titulo = document.getElementById('tituloHistoria').textContent;
+    const texto = document.getElementById('textoHistoria').textContent;
+    const msg = encodeURIComponent(`📖 *${titulo}*\n\n${texto}\n\n✨ Criado com Era Uma Vez — histórias para crianças com IA`);
+    window.open(`https://wa.me/?text=${msg}`, '_blank', 'noopener');
+  }
+
+  function mostrarConviteLogin() {
+    const overlay = document.getElementById('modalHistoria');
+    document.getElementById('modalTitulo').textContent = 'Que bom que você gostou! 😊';
+    document.getElementById('modalMeta').innerHTML = '';
+    document.getElementById('modalCorpo').textContent = 'Crie uma conta gratuita para continuar criando histórias para as crianças. É rápido — basta tocar no botão abaixo.';
+    document.getElementById('modalOriginal').innerHTML = `<button class="btn-gerar" onclick="fecharModal();loginGoogle();" style="margin-top:12px;">Criar conta grátis com Google</button>`;
+    document.getElementById('modalOriginal').style.display = '';
+    document.getElementById('modalOriginal').style.background = 'none';
+    overlay.classList.add('aberto');
   }
 
   function showToast(msg) {
