@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://*.supabase.co https://generativelanguage.googleapis.com; img-src 'self' data:;">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="description" content="Transforme suas memórias em histórias com Inteligência Artificial. Para pessoas 50+.">
-<meta name="theme-color" content="#3E2206">
-<title>Histórias da Minha Vida · IA Geração 50+</title>
+<meta name="description" content="Crie histórias infantis personalizadas com IA. Pais, avós e tios contando histórias únicas para as crianças da família.">
+<meta name="theme-color" content="#2D1B69">
+<title>Era Uma Vez · Histórias para Crianças com IA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <style>
   :root {
-    --ouro: #C9922A;
-    --ouro-claro: #F5D98A;
-    --marrom: #3E2206;
-    --creme: #FAF6EE;
-    --cinza-texto: #4A3B2C;
-    --verde-suave: #5A7A5B;
-    --sombra: rgba(62,34,6,0.12);
+    --ouro: #E8833A;
+    --ouro-claro: #FFD19A;
+    --marrom: #2D1B69;
+    --creme: #FFF9F0;
+    --cinza-texto: #3D3556;
+    --verde-suave: #5A9E6F;
+    --sombra: rgba(45,27,105,0.10);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,7 +42,7 @@
 
   /* HEADER */
   header {
-    background: linear-gradient(135deg, var(--marrom) 0%, #6B3A12 100%);
+    background: linear-gradient(135deg, var(--marrom) 0%, #5B3FA0 100%);
     padding: 28px 24px 24px;
     text-align: center;
     position: relative;
@@ -309,7 +309,7 @@
   /* BOTAO */
   .btn-gerar {
     width: 100%;
-    background: linear-gradient(135deg, var(--ouro) 0%, #A8721A 100%);
+    background: linear-gradient(135deg, var(--ouro) 0%, #D0652A 100%);
     color: white;
     border: none;
     border-radius: 14px;
@@ -722,9 +722,9 @@
 <body>
 
 <header>
-  <div class="badge">✨ IA Geração 50+</div>
-  <h1>Histórias da <em>Minha Vida</em></h1>
-  <p>Escreva um momento marcante e a IA transforma em uma bela história para guardar</p>
+  <div class="badge">✨ Histórias com IA</div>
+  <h1>Era Uma <em>Vez...</em></h1>
+  <p>Conte um pouquinho e a IA cria uma história mágica para ler para as crianças</p>
 
   <div class="auth-bar" id="authBar">
     <button class="auth-btn auth-btn-google" id="btnLogin" onclick="loginGoogle()">
@@ -743,7 +743,7 @@
     <span class="tab-icon" aria-hidden="true">✍️</span> Criar
   </button>
   <button class="nav-tab" onclick="trocarView('acervo')" id="tabAcervo" role="tab" aria-selected="false" aria-controls="viewAcervo">
-    <span class="tab-icon" aria-hidden="true">📚</span> Meu Acervo <span class="tab-badge" id="acervoBadge" style="display:none" aria-label="quantidade de histórias">0</span>
+    <span class="tab-icon" aria-hidden="true">📚</span> Histórias <span class="tab-badge" id="acervoBadge" style="display:none" aria-label="quantidade de histórias">0</span>
   </button>
 </nav>
 
@@ -752,60 +752,60 @@
   <!-- ======= VIEW: CRIAR ======= -->
   <div class="view ativa" id="viewCriar" role="tabpanel" aria-labelledby="tabCriar">
 
-    <div class="section-label">💡 Toque em um tema ou escreva com suas palavras</div>
+    <div class="section-label">💡 Escolha um tema ou escreva do seu jeito</div>
     <div class="temas" id="temas">
-      <button class="tema-btn" data-texto="A época da minha infância, brincando na rua com os amigos do bairro, sem tecnologia e cheio de aventuras">🏘️ Minha infância</button>
-      <button class="tema-btn" data-texto="O primeiro dia no meu emprego, cheio de nervosismo e expectativas sobre o futuro profissional">💼 Primeiro emprego</button>
-      <button class="tema-btn" data-texto="O dia do meu casamento, as emoções, os preparativos e o momento especial de dizer sim">💍 Meu casamento</button>
-      <button class="tema-btn" data-texto="A chegada do meu filho ou neto, a emoção daquele momento único e transformador">👶 Chegada de um filho</button>
-      <button class="tema-btn" data-texto="Uma viagem inesquecível que fiz, os lugares visitados e as pessoas que conheci">✈️ Uma viagem</button>
-      <button class="tema-btn" data-texto="Um professor ou mentor que marcou minha vida e mudou minha forma de ver o mundo">🎓 Alguém especial</button>
+      <button class="tema-btn" data-texto="Uma aventura no parque com a família, brincando, explorando e descobrindo coisas novas">🌳 Aventura no parque</button>
+      <button class="tema-btn" data-texto="O dia que choveu muito e a família toda ficou em casa inventando brincadeiras">🌧️ Dia de chuva</button>
+      <button class="tema-btn" data-texto="Uma visita à casa dos avós, com comidas gostosas, abraços e muitas risadas">🏠 Casa dos avós</button>
+      <button class="tema-btn" data-texto="Uma viagem de carro com a família, cantando músicas e parando para tomar sorvete na estrada">🚗 Viagem em família</button>
+      <button class="tema-btn" data-texto="O primeiro dia de aula, com mochila nova, um pouco de medo e muita coragem">🎒 Primeiro dia de aula</button>
+      <button class="tema-btn" data-texto="Uma noite de acampamento no quintal, com lanterna, barulhos estranhos e muita imaginação">⛺ Acampamento</button>
     </div>
 
     <div class="card">
-      <label for="memoria">Qual é a sua memória?</label>
-      <div class="sublabel">Conte com detalhes — a IA vai transformar em uma história bonita</div>
-      <textarea id="memoria" placeholder="Ex: Lembro que aos 10 anos eu acordava cedo para pegar manga no quintal do vizinho com meus irmãos. Era uma aventura que hoje parece um sonho..."></textarea>
+      <label for="memoria">Sobre o que é a história?</label>
+      <div class="sublabel">Coloque nomes, lugares e detalhes — a IA transforma tudo em uma história mágica</div>
+      <textarea id="memoria" placeholder="Ex: Minha filha Sofia, de 5 anos, foi pela primeira vez na praia em Ubatuba com o avô João. Ela tinha medo das ondas mas acabou adorando..."></textarea>
 
       <div style="margin-top:18px;">
-        <div class="section-label">🖊️ Como você quer que fique?</div>
+        <div class="section-label">🖊️ Que tipo de história?</div>
         <div class="estilos" id="estilos">
-          <label class="estilo-opt ativo" data-val="nostalgico">
-            <input type="radio" name="estilo" value="nostalgico" checked>
-            <span class="estilo-icon">🌅</span>
-            <div><div class="estilo-text">Nostálgico</div><div class="estilo-desc">Saudade e emoção</div></div>
+          <label class="estilo-opt ativo" data-val="aventura">
+            <input type="radio" name="estilo" value="aventura" checked>
+            <span class="estilo-icon">🦁</span>
+            <div><div class="estilo-text">Aventura</div><div class="estilo-desc">Emoção e descobertas</div></div>
           </label>
-          <label class="estilo-opt" data-val="poetico">
-            <input type="radio" name="estilo" value="poetico">
-            <span class="estilo-icon">🌸</span>
-            <div><div class="estilo-text">Poético</div><div class="estilo-desc">Belo e sensível</div></div>
+          <label class="estilo-opt" data-val="engracado">
+            <input type="radio" name="estilo" value="engracado">
+            <span class="estilo-icon">😂</span>
+            <div><div class="estilo-text">Engraçada</div><div class="estilo-desc">Pra dar risada</div></div>
           </label>
-          <label class="estilo-opt" data-val="bem-humorado">
-            <input type="radio" name="estilo" value="bem-humorado">
-            <span class="estilo-icon">😄</span>
-            <div><div class="estilo-text">Bem-humorado</div><div class="estilo-desc">Leve e divertido</div></div>
+          <label class="estilo-opt" data-val="magico">
+            <input type="radio" name="estilo" value="magico">
+            <span class="estilo-icon">🧚</span>
+            <div><div class="estilo-text">Mágica</div><div class="estilo-desc">Com fantasia e encanto</div></div>
           </label>
-          <label class="estilo-opt" data-val="inspirador">
-            <input type="radio" name="estilo" value="inspirador">
-            <span class="estilo-icon">⭐</span>
-            <div><div class="estilo-text">Inspirador</div><div class="estilo-desc">Que motiva outros</div></div>
+          <label class="estilo-opt" data-val="carinhoso">
+            <input type="radio" name="estilo" value="carinhoso">
+            <span class="estilo-icon">🤗</span>
+            <div><div class="estilo-text">Carinhosa</div><div class="estilo-desc">Quentinha e acolhedora</div></div>
           </label>
         </div>
       </div>
     </div>
 
     <button class="btn-gerar" id="btnGerar" onclick="gerarHistoria()">
-      <span>✍️</span> Criar minha história
+      <span>📖</span> Criar história
     </button>
 
     <div class="loading-area" id="loading">
-      <span class="caneta">✍️</span>
-      <div class="loading-texto">Escrevendo sua história...</div>
-      <div class="loading-sub">Só um instante</div>
+      <span class="caneta">📖</span>
+      <div class="loading-texto">Era uma vez...</div>
+      <div class="loading-sub">A história está sendo criada</div>
     </div>
 
     <div class="erro-card" id="erroCard">
-      <p>😔 Não conseguimos criar sua história agora. Toque no botão para tentar de novo.</p>
+      <p>😔 Não conseguimos criar a história agora. Toque no botão para tentar de novo.</p>
     </div>
 
     <div class="resultado-area" id="resultado">
@@ -815,15 +815,15 @@
       </div>
       <div id="salvoMsg" style="display:none; text-align:center; padding:8px; color:var(--verde-suave); font-size:14px; font-weight:700;">✅ Salva no seu acervo</div>
       <div class="acoes">
-        <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar texto</button>
-        <button class="btn-acao btn-nova" onclick="novaHistoria()">✍️ Criar outra</button>
+        <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar</button>
+        <button class="btn-acao btn-nova" onclick="novaHistoria()">📖 Criar outra</button>
       </div>
     </div>
 
     <div class="ia-info">
-      <span class="ia-info-icon">🤖</span>
+      <span class="ia-info-icon">📖</span>
       <div class="ia-info-texto">
-        <strong>Como funciona?</strong> Você conta uma memória e a inteligência artificial escreve uma história bonita a partir dela. É rápido e fácil — basta tocar e esperar alguns segundos.
+        <strong>Como funciona?</strong> Você descreve uma situação com nomes e detalhes da família, e a inteligência artificial cria uma história infantil personalizada. É só ler para a criança e ver o sorriso!
       </div>
     </div>
 
@@ -955,14 +955,14 @@
   });
 
   function getEstilo() {
-    return document.querySelector('input[name="estilo"]:checked')?.value || 'nostalgico';
+    return document.querySelector('input[name="estilo"]:checked')?.value || 'aventura';
   }
 
   const estilosDesc = {
-    nostalgico: 'com tom nostálgico, cheio de saudade, emoção e carinho pelo passado',
-    poetico: 'com linguagem poética, bela e sensível, usando metáforas e imagens vívidas',
-    'bem-humorado': 'com tom leve, bem-humorado e divertido, trazendo alegria e leveza',
-    inspirador: 'com tom inspirador e motivador, que possa tocar e motivar quem lê'
+    aventura: 'de aventura, cheia de emoção, coragem e descobertas incríveis',
+    engracado: 'engraçada e divertida, com situações bobas que fazem a criança dar risada',
+    magico: 'mágica e encantada, com elementos de fantasia, bichos falantes ou poderes especiais',
+    carinhoso: 'carinhosa e acolhedora, que transmite amor, segurança e o calor da família'
   };
 
   // ========== GERAR HISTORIA ==========
@@ -991,21 +991,23 @@
     document.getElementById('resultado').classList.remove('visivel');
     document.getElementById('erroCard').classList.remove('visivel');
 
-    const prompt = `Você é um escritor sensível e talentoso especializado em transformar memórias reais em histórias tocantes.
+    const prompt = `Você é um contador de histórias infantis talentoso. Sua missão é transformar situações reais da família em histórias encantadoras para crianças.
 
-A pessoa compartilhou esta memória:
+Um adulto da família descreveu esta situação:
 "${memoria}"
 
-Escreva uma história ${descEstilo}.
+Crie uma história infantil ${descEstilo}.
 
-INSTRUÇÕES:
-- Primeiro, crie um título bonito para a história (uma linha)
-- Depois escreva a história em 3 a 4 parágrafos
-- Escreva na primeira pessoa, como se fosse a própria pessoa contando
-- Use linguagem simples, acolhedora e acessível para adultos acima de 50 anos
-- Enriqueça com detalhes sensoriais (cheiros, sons, sensações) que tornam a história mais viva
-- A história deve ter entre 200 e 280 palavras
-- Termine com uma frase reflexiva e significativa
+INSTRUÇÕES IMPORTANTES:
+- Primeiro, crie um título encantador para a história (uma linha)
+- Escreva a história em 3 a 4 parágrafos curtos, fáceis de ler em voz alta
+- USE TODOS os nomes de pessoas, lugares e cidades mencionados — eles são reais e a criança precisa se reconhecer na história
+- A linguagem deve ser simples, clara e adequada para crianças de 3 a 10 anos
+- Escreva em terceira pessoa, como quem está contando a história para a criança
+- Inclua sons, cores e sensações que prendam a atenção (ex: "e então — SPLASH! — a água espirrou pra todo lado!")
+- Use repetições e perguntas que convidam a criança a participar (ex: "e adivinha o que aconteceu?")
+- A história deve ter entre 200 e 300 palavras
+- Termine com um final feliz e acolhedor, que dê vontade de abraçar
 
 Formato de resposta:
 TÍTULO: [título aqui]
@@ -1076,7 +1078,7 @@ TÍTULO: [título aqui]
         corpo,
         memoria_original: memoria,
         estilo,
-        publico: 'adulto',
+        publico: 'infantil',
         visivel: false
       });
 
@@ -1127,10 +1129,10 @@ TÍTULO: [título aqui]
       container.innerHTML = `
         <div class="acervo-vazio">
           <div class="acervo-vazio-icon">📚</div>
-          <h3>Meu Acervo</h3>
-          <p>Faça login para salvar e acessar suas histórias</p>
+          <h3>Minhas Histórias</h3>
+          <p>Faça login para guardar as histórias e ler de novo quando quiser</p>
           <div class="acervo-login-hint">
-            <strong>💡 Dica:</strong> Ao fazer login, suas histórias ficam salvas e você pode acessá-las de qualquer dispositivo.
+            <strong>💡 Dica:</strong> Suas histórias ficam salvas e você pode acessar de qualquer lugar.
           </div>
         </div>`;
       return;
@@ -1141,15 +1143,15 @@ TÍTULO: [título aqui]
         <div class="acervo-vazio">
           <div class="acervo-vazio-icon">✨</div>
           <h3>Nenhuma história ainda</h3>
-          <p>Crie sua primeira história e clique em "Salvar" para guardá-la aqui</p>
+          <p>Crie a primeira história para a criançada!</p>
           <button class="btn-gerar" onclick="trocarView('criar')" style="max-width:280px;margin:0 auto;">
-            ✍️ Criar minha primeira história
+            📖 Criar a primeira história
           </button>
         </div>`;
       return;
     }
 
-    const estiloEmoji = { nostalgico: '🌅', poetico: '🌸', 'bem-humorado': '😄', inspirador: '⭐' };
+    const estiloEmoji = { aventura: '🦁', engracado: '😂', magico: '🧚', carinhoso: '🤗' };
 
     let html = `<div class="acervo-counter">Você tem <strong>${historiasCache.length}</strong> história${historiasCache.length > 1 ? 's' : ''} no seu acervo</div>`;
     html += '<div class="acervo-lista">';
@@ -1182,7 +1184,7 @@ TÍTULO: [título aqui]
     document.getElementById('modalTitulo').textContent = h.titulo || 'Sem título';
 
     const data = new Date(h.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
-    const estiloEmoji = { nostalgico: '🌅', poetico: '🌸', 'bem-humorado': '😄', inspirador: '⭐' };
+    const estiloEmoji = { aventura: '🦁', engracado: '😂', magico: '🧚', carinhoso: '🤗' };
     const emoji = estiloEmoji[h.estilo] || '📖';
     document.getElementById('modalMeta').innerHTML = `<span>${emoji} ${esc(h.estilo)}</span> <span>📅 ${data}</span>`;
 
@@ -1190,7 +1192,7 @@ TÍTULO: [título aqui]
 
     const originalDiv = document.getElementById('modalOriginal');
     if (h.memoria_original) {
-      originalDiv.innerHTML = `<strong>💭 Memória original</strong>${esc(h.memoria_original)}`;
+      originalDiv.innerHTML = `<strong>💬 O que foi contado</strong>${esc(h.memoria_original)}`;
       originalDiv.style.display = '';
     } else {
       originalDiv.style.display = 'none';
