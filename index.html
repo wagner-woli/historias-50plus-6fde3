@@ -752,23 +752,23 @@
   <!-- ======= VIEW: CRIAR ======= -->
   <div class="view ativa" id="viewCriar" role="tabpanel" aria-labelledby="tabCriar">
 
-    <div class="section-label">💡 Escolha um tema ou escreva o seu</div>
+    <div class="section-label">💡 Toque em um tema ou escreva com suas palavras</div>
     <div class="temas" id="temas">
-      <button class="tema-btn" data-texto="A época da minha infância, brincando na rua com os amigos do bairro, sem tecnologia e cheio de aventuras">🏘️ Infância no bairro</button>
+      <button class="tema-btn" data-texto="A época da minha infância, brincando na rua com os amigos do bairro, sem tecnologia e cheio de aventuras">🏘️ Minha infância</button>
       <button class="tema-btn" data-texto="O primeiro dia no meu emprego, cheio de nervosismo e expectativas sobre o futuro profissional">💼 Primeiro emprego</button>
-      <button class="tema-btn" data-texto="O dia do meu casamento, as emoções, os preparativos e o momento especial de dizer sim">💍 Dia do casamento</button>
+      <button class="tema-btn" data-texto="O dia do meu casamento, as emoções, os preparativos e o momento especial de dizer sim">💍 Meu casamento</button>
       <button class="tema-btn" data-texto="A chegada do meu filho ou neto, a emoção daquele momento único e transformador">👶 Chegada de um filho</button>
-      <button class="tema-btn" data-texto="Uma viagem inesquecível que fiz, os lugares visitados e as pessoas que conheci">✈️ Viagem inesquecível</button>
-      <button class="tema-btn" data-texto="Um professor ou mentor que marcou minha vida e mudou minha forma de ver o mundo">🎓 Professor marcante</button>
+      <button class="tema-btn" data-texto="Uma viagem inesquecível que fiz, os lugares visitados e as pessoas que conheci">✈️ Uma viagem</button>
+      <button class="tema-btn" data-texto="Um professor ou mentor que marcou minha vida e mudou minha forma de ver o mundo">🎓 Alguém especial</button>
     </div>
 
     <div class="card">
-      <label for="memoria">Conte seu momento</label>
-      <div class="sublabel">Quanto mais detalhes você der, mais rica será a história</div>
+      <label for="memoria">Qual é a sua memória?</label>
+      <div class="sublabel">Conte com detalhes — a IA vai transformar em uma história bonita</div>
       <textarea id="memoria" placeholder="Ex: Lembro que aos 10 anos eu acordava cedo para pegar manga no quintal do vizinho com meus irmãos. Era uma aventura que hoje parece um sonho..."></textarea>
 
       <div style="margin-top:18px;">
-        <div class="section-label">🖊️ Estilo da história</div>
+        <div class="section-label">🖊️ Como você quer que fique?</div>
         <div class="estilos" id="estilos">
           <label class="estilo-opt ativo" data-val="nostalgico">
             <input type="radio" name="estilo" value="nostalgico" checked>
@@ -795,17 +795,17 @@
     </div>
 
     <button class="btn-gerar" id="btnGerar" onclick="gerarHistoria()">
-      <span>✍️</span> Transformar em História
+      <span>✍️</span> Criar minha história
     </button>
 
     <div class="loading-area" id="loading">
       <span class="caneta">✍️</span>
-      <div class="loading-texto">A IA está escrevendo sua história...</div>
-      <div class="loading-sub">Isso leva alguns segundos</div>
+      <div class="loading-texto">Escrevendo sua história...</div>
+      <div class="loading-sub">Só um instante</div>
     </div>
 
     <div class="erro-card" id="erroCard">
-      <p>😔 Ops! Algo deu errado. Verifique sua conexão e tente novamente.</p>
+      <p>😔 Não conseguimos criar sua história agora. Toque no botão para tentar de novo.</p>
     </div>
 
     <div class="resultado-area" id="resultado">
@@ -813,17 +813,17 @@
         <div class="resultado-titulo" id="tituloHistoria"></div>
         <div class="resultado-texto" id="textoHistoria"></div>
       </div>
+      <div id="salvoMsg" style="display:none; text-align:center; padding:8px; color:var(--verde-suave); font-size:14px; font-weight:700;">✅ Salva no seu acervo</div>
       <div class="acoes">
-        <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar</button>
-        <button class="btn-acao btn-salvar" id="btnSalvar" onclick="salvarHistoria()">💾 Salvar</button>
-        <button class="btn-acao btn-nova" onclick="novaHistoria()">🔄 Nova</button>
+        <button class="btn-acao btn-copiar" onclick="copiarTexto()">📋 Copiar texto</button>
+        <button class="btn-acao btn-nova" onclick="novaHistoria()">✍️ Criar outra</button>
       </div>
     </div>
 
     <div class="ia-info">
       <span class="ia-info-icon">🤖</span>
       <div class="ia-info-texto">
-        <strong>Como funciona?</strong> Esta aplicação usa Inteligência Artificial (Gemini, do Google) para transformar suas memórias em histórias. Tudo acontece em segundos — a IA lê o que você escreveu e cria um texto único só para você.
+        <strong>Como funciona?</strong> Você conta uma memória e a inteligência artificial escreve uma história bonita a partir dela. É rápido e fácil — basta tocar e esperar alguns segundos.
       </div>
     </div>
 
@@ -942,6 +942,7 @@
       document.querySelectorAll('.tema-btn').forEach(b => b.classList.remove('ativo'));
       btn.classList.add('ativo');
       document.getElementById('memoria').value = btn.dataset.texto;
+      document.getElementById('btnGerar').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   });
 
@@ -1051,15 +1052,10 @@ TÍTULO: [título aqui]
       document.getElementById('tituloHistoria').textContent = titulo;
       document.getElementById('textoHistoria').textContent = corpo;
       document.getElementById('resultado').classList.add('visivel');
+      document.getElementById('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      // Habilitar/desabilitar botao salvar
-      const btnSalvar = document.getElementById('btnSalvar');
       if (currentUser) {
-        btnSalvar.disabled = false;
-        btnSalvar.textContent = '💾 Salvar';
-      } else {
-        btnSalvar.disabled = false;
-        btnSalvar.textContent = '💾 Salvar (login)';
+        autoSalvar(titulo, corpo, memoria, estilo);
       }
 
     } catch (e) {
@@ -1070,47 +1066,31 @@ TÍTULO: [título aqui]
     }
   }
 
-  // ========== SALVAR HISTORIA ==========
-  async function salvarHistoria() {
-    if (!currentUser) {
-      showToast('Faça login para salvar suas histórias');
-      loginGoogle();
-      return;
-    }
-
-    const titulo = document.getElementById('tituloHistoria').textContent;
-    const corpo = document.getElementById('textoHistoria').textContent;
-    const memoria = document.getElementById('memoria').value.trim();
-    const estilo = getEstilo();
-
-    const btnSalvar = document.getElementById('btnSalvar');
-    btnSalvar.disabled = true;
-    btnSalvar.textContent = '⏳ Salvando...';
-
-    const { data, error } = await sb
+  // ========== AUTO-SALVAR ==========
+  async function autoSalvar(titulo, corpo, memoria, estilo) {
+    const { error } = await sb
       .from('historias')
       .insert({
         user_id: currentUser.id,
-        titulo: titulo,
-        corpo: corpo,
+        titulo,
+        corpo,
         memoria_original: memoria,
-        estilo: estilo,
+        estilo,
         publico: 'adulto',
         visivel: false
-      })
-      .select();
+      });
 
+    const msg = document.getElementById('salvoMsg');
     if (error) {
       console.error('Erro ao salvar:', error);
-      showToast('Erro ao salvar. Tente novamente.');
-      btnSalvar.disabled = false;
-      btnSalvar.textContent = '💾 Salvar';
+      msg.textContent = '⚠️ Não foi possível salvar automaticamente';
+      msg.style.color = '#C0392B';
     } else {
-      showToast('✅ História salva no seu acervo!');
-      btnSalvar.textContent = '✅ Salva!';
-      btnSalvar.disabled = true;
+      msg.textContent = '✅ Salva no seu acervo';
+      msg.style.color = '';
       carregarAcervo();
     }
+    msg.style.display = 'block';
   }
 
   // ========== MEU ACERVO ==========
@@ -1238,10 +1218,11 @@ TÍTULO: [título aqui]
 
   function novaHistoria() {
     document.getElementById('resultado').classList.remove('visivel');
+    document.getElementById('salvoMsg').style.display = 'none';
     document.getElementById('memoria').value = '';
-    document.getElementById('memoria').focus();
     document.querySelectorAll('.tema-btn').forEach(b => b.classList.remove('ativo'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => document.getElementById('memoria').focus(), 400);
   }
 
   function showToast(msg) {
