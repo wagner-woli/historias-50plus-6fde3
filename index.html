@@ -2,10 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://*.supabase.co https://generativelanguage.googleapis.com; img-src 'self' data:;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="Transforme suas memórias em histórias com Inteligência Artificial. Para pessoas 50+.">
+<meta name="theme-color" content="#3E2206">
 <title>Histórias da Minha Vida · IA Geração 50+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <style>
   :root {
     --ouro: #C9922A;
@@ -24,6 +30,14 @@
     background: var(--creme);
     color: var(--cinza-texto);
     min-height: 100vh;
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  button, a, label, [onclick] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   /* HEADER */
@@ -103,9 +117,10 @@
     background: rgba(255,255,255,0.15);
     border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    padding: 7px 18px;
-    border-radius: 20px;
-    font-size: 13px;
+    padding: 12px 20px;
+    min-height: 48px;
+    border-radius: 24px;
+    font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     font-family: 'Lato', sans-serif;
@@ -205,8 +220,9 @@
     border: 2px solid #E8DDCC;
     color: var(--cinza-texto);
     border-radius: 24px;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 12px 18px;
+    font-size: 15px;
+    min-height: 48px;
     cursor: pointer;
     transition: all 0.2s;
     font-family: 'Lato', sans-serif;
@@ -275,7 +291,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 14px 16px;
+    min-height: 48px;
     border: 2px solid #E8DDCC;
     border-radius: 10px;
     cursor: pointer;
@@ -394,7 +411,8 @@
   .btn-acao {
     flex: 1;
     min-width: 100px;
-    padding: 12px 16px;
+    min-height: 48px;
+    padding: 14px 16px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 700;
@@ -664,6 +682,41 @@
     border: 1px solid #E8DDCC;
   }
   .acervo-counter strong { color: var(--ouro); }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 480px) {
+    header { padding: 20px 16px 18px; }
+    header h1 { font-size: 22px; }
+    header p { font-size: 13px; }
+    main { padding: 20px 16px 40px; }
+    .card { padding: 18px 16px; }
+    .estilos { grid-template-columns: 1fr; }
+    .temas { gap: 6px; }
+    .tema-btn { font-size: 13px; padding: 10px 14px; }
+    .resultado-card { padding: 20px 16px; }
+    .acoes { flex-direction: column; }
+    .btn-acao { min-width: auto; }
+    .modal-historia { padding: 24px 18px; border-radius: 16px; }
+    .modal-historia-titulo { font-size: 20px; }
+    .nav-tab { padding: 12px 10px; font-size: 13px; }
+  }
+
+  @media (min-width: 481px) and (max-width: 768px) {
+    main { padding: 24px 20px 50px; }
+    .modal-historia { max-width: 90vw; }
+  }
+
+  @media (min-width: 769px) {
+    header { padding: 36px 24px 30px; }
+    .temas { justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -685,19 +738,19 @@
   </div>
 </header>
 
-<div class="nav-tabs" id="navTabs">
-  <button class="nav-tab ativo" onclick="trocarView('criar')" id="tabCriar">
-    <span class="tab-icon">✍️</span> Criar
+<nav class="nav-tabs" id="navTabs" role="tablist" aria-label="Navegação principal">
+  <button class="nav-tab ativo" onclick="trocarView('criar')" id="tabCriar" role="tab" aria-selected="true" aria-controls="viewCriar">
+    <span class="tab-icon" aria-hidden="true">✍️</span> Criar
   </button>
-  <button class="nav-tab" onclick="trocarView('acervo')" id="tabAcervo">
-    <span class="tab-icon">📚</span> Meu Acervo <span class="tab-badge" id="acervoBadge" style="display:none">0</span>
+  <button class="nav-tab" onclick="trocarView('acervo')" id="tabAcervo" role="tab" aria-selected="false" aria-controls="viewAcervo">
+    <span class="tab-icon" aria-hidden="true">📚</span> Meu Acervo <span class="tab-badge" id="acervoBadge" style="display:none" aria-label="quantidade de histórias">0</span>
   </button>
-</div>
+</nav>
 
 <main>
 
   <!-- ======= VIEW: CRIAR ======= -->
-  <div class="view ativa" id="viewCriar">
+  <div class="view ativa" id="viewCriar" role="tabpanel" aria-labelledby="tabCriar">
 
     <div class="section-label">💡 Escolha um tema ou escreva o seu</div>
     <div class="temas" id="temas">
@@ -777,16 +830,16 @@
   </div>
 
   <!-- ======= VIEW: MEU ACERVO ======= -->
-  <div class="view" id="viewAcervo">
+  <div class="view" id="viewAcervo" role="tabpanel" aria-labelledby="tabAcervo">
     <div id="acervoConteudo"></div>
   </div>
 
 </main>
 
 <!-- MODAL HISTORIA COMPLETA -->
-<div class="modal-overlay" id="modalHistoria" onclick="if(event.target===this)fecharModal()">
+<div class="modal-overlay" id="modalHistoria" onclick="if(event.target===this)fecharModal()" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
   <div class="modal-historia">
-    <button class="modal-fechar" onclick="fecharModal()">✕</button>
+    <button class="modal-fechar" onclick="fecharModal()" aria-label="Fechar história">✕</button>
     <div class="modal-historia-titulo" id="modalTitulo"></div>
     <div class="modal-historia-meta" id="modalMeta"></div>
     <div class="modal-historia-corpo" id="modalCorpo"></div>
@@ -866,14 +919,19 @@
   // ========== NAVEGACAO ==========
   function trocarView(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('ativa'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('ativo'));
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      t.classList.remove('ativo');
+      t.setAttribute('aria-selected', 'false');
+    });
 
     if (view === 'criar') {
       document.getElementById('viewCriar').classList.add('ativa');
       document.getElementById('tabCriar').classList.add('ativo');
+      document.getElementById('tabCriar').setAttribute('aria-selected', 'true');
     } else {
       document.getElementById('viewAcervo').classList.add('ativa');
       document.getElementById('tabAcervo').classList.add('ativo');
+      document.getElementById('tabAcervo').setAttribute('aria-selected', 'true');
       renderAcervo();
     }
   }
@@ -907,7 +965,17 @@
   };
 
   // ========== GERAR HISTORIA ==========
+  let ultimaGeracao = 0;
+  const INTERVALO_MINIMO = 10000;
+
   async function gerarHistoria() {
+    const agora = Date.now();
+    if (agora - ultimaGeracao < INTERVALO_MINIMO) {
+      showToast('Aguarde alguns segundos antes de gerar outra história');
+      return;
+    }
+    ultimaGeracao = agora;
+
     const memoria = document.getElementById('memoria').value.trim();
     if (!memoria || memoria.length < 20) {
       alert('Por favor, escreva um pouco mais sobre sua memória 😊');
@@ -1154,6 +1222,10 @@ TÍTULO: [título aqui]
   function fecharModal() {
     document.getElementById('modalHistoria').classList.remove('aberto');
   }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModal();
+  });
 
   // ========== UTILITARIOS ==========
   function copiarTexto() {
