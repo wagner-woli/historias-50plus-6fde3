@@ -164,6 +164,12 @@
     border-right:1px solid var(--border);
     background:#f8fafc;border-radius:6px 0 0 6px;
   }
+  .input-suffix{
+    display:flex;align-items:center;justify-content:center;
+    padding:0 12px;color:var(--text-2);font-size:14px;font-weight:600;
+    border-left:1px solid var(--border);
+    background:#f8fafc;border-radius:0 6px 6px 0;
+  }
   .input{
     flex:1;border:0;background:transparent;outline:none;
     padding:0 12px;font-size:16px;color:var(--text);
@@ -278,7 +284,8 @@
     grid-template-columns:1fr;
   }
   @media (min-width:640px){ .cons-grid{grid-template-columns:repeat(2,1fr)} }
-  @media (min-width:1024px){ .cons-grid{grid-template-columns:repeat(3,1fr) 1.4fr} }
+  @media (min-width:1024px){ .cons-grid{grid-template-columns:repeat(3,1fr)} }
+  @media (min-width:1280px){ .cons-grid{grid-template-columns:repeat(4,1fr) 1.3fr} }
 
   .cons-card{
     background:rgba(255,255,255,.06);
@@ -392,7 +399,7 @@
       </svg>
     </div>
     <div>
-      <strong>Simule seu cenário:</strong> ajuste o <strong>preço de venda</strong> e a <strong>quantidade vendida</strong> em cada SKU abaixo. A DRE recalcula em tempo real.
+      <strong>Simule seu cenário:</strong> ajuste o <strong>preço de venda</strong>, a <strong>quantidade vendida</strong> e o <strong>% de intermediação CB Pay</strong> em cada SKU abaixo. A DRE recalcula em tempo real.
     </div>
   </div>
 
@@ -415,6 +422,11 @@
         <div class="l">Custo de Aquisição</div>
         <div class="v" id="c-custo">R$ 0,00</div>
         <div class="sub" id="c-custo-pct">0,00% da receita</div>
+      </div>
+      <div class="cons-card">
+        <div class="l">Intermediação CB Pay</div>
+        <div class="v" id="c-cbpay">R$ 0,00</div>
+        <div class="sub" id="c-cbpay-pct">0,00% da receita</div>
       </div>
       <div class="cons-card highlight">
         <div class="l">Lucro Líquido Total</div>
@@ -460,7 +472,7 @@
   const PRECO_DEFAULT = 19.90;
   const TRIB = { iss:0.05, pis:0.0165, cofins:0.076 };
 
-  const STORAGE_KEY = "woli_cb_simulador_v1";
+  const STORAGE_KEY = "woli_cb_simulador_v2";
 
   // Formatters
   const fmtBRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
@@ -528,6 +540,17 @@
             <button class="step-btn" type="button" data-step="10000" data-target="qtd-${s.id}" aria-label="Aumentar 10 mil unidades" title="+10.000">+</button>
           </div>
         </div>
+        <div class="field">
+          <label class="field-label" for="cbpay-${s.id}">% Intermediação CB Pay Educação</label>
+          <div class="stepper">
+            <button class="step-btn" type="button" data-step="-1" data-target="cbpay-${s.id}" aria-label="Diminuir 1 ponto percentual" title="−1,00%">−</button>
+            <div class="input-wrap">
+              <input class="input" id="cbpay-${s.id}" inputmode="decimal" type="text" value="0,00" aria-label="% Intermediação CB Pay SKU ${s.id}" title="Clique para editar o % de intermediação CB Pay">
+              <span class="input-suffix">%</span>
+            </div>
+            <button class="step-btn" type="button" data-step="1" data-target="cbpay-${s.id}" aria-label="Aumentar 1 ponto percentual" title="+1,00%">+</button>
+          </div>
+        </div>
       </div>
       <div class="price-hero">
         <div class="ph-label">Preço total ao cliente</div>
@@ -565,6 +588,10 @@
           <span class="dre-label">Custo de Aquisição</span>
           <span class="dre-value" id="cmv-${s.id}">—</span>
         </div>
+        <div class="dre-row deduct">
+          <span class="dre-label" id="cbpay-lbl-${s.id}">Intermediação CB Pay (0,00%)</span>
+          <span class="dre-value" id="cbpay-val-${s.id}">—</span>
+        </div>
         <div class="result">
           <div class="result-row">
             <span class="label">Lucro Líquido</span>
@@ -580,16 +607,17 @@
     grid.appendChild(card);
   });
 
-  function calc(precoMensal, meses, qtd, custoUnit){
+  function calc(precoMensal, meses, qtd, custoUnit, cbpayPct){
     const rb = precoMensal * meses * qtd;
     const iss = rb * TRIB.iss;
     const pis = rb * TRIB.pis;
     const cof = rb * TRIB.cofins;
     const rl  = rb - iss - pis - cof;
     const cmv = custoUnit * qtd;
-    const ll  = rl - cmv;
+    const cbpay = rb * ((cbpayPct || 0) / 100);
+    const ll  = rl - cmv - cbpay;
     const ml  = rb > 0 ? (ll / rb) * 100 : 0;
-    return { rb, iss, pis, cof, rl, cmv, ll, ml };
+    return { rb, iss, pis, cof, rl, cmv, cbpay, ll, ml };
   }
 
   function setText(id, value, opts={}){
@@ -602,8 +630,8 @@
   }
 
   // Donut chart (consolidado)
-  function renderDonut(lucro, tributos, custo){
-    const total = lucro + tributos + custo;
+  function renderDonut(lucro, tributos, custo, cbpay){
+    const total = Math.max(lucro,0) + tributos + custo + cbpay;
     const svg = document.getElementById('donut');
     const legend = document.getElementById('donut-legend');
     // Clear existing arcs
@@ -612,9 +640,10 @@
     const C = 2 * Math.PI * r;
     let offset = 0;
     const segs = [
-      { name:'Lucro Líquido CB', val:Math.max(lucro,0), color:'#15803d' },
-      { name:'Tributos',         val:tributos,          color:'#b91c1c' },
-      { name:'Custo de Aquisição', val:custo,           color:'#0a3d62' },
+      { name:'Lucro Líquido Woli',  val:Math.max(lucro,0), color:'#15803d' },
+      { name:'Tributos',            val:tributos,          color:'#b91c1c' },
+      { name:'Custo de Aquisição',  val:custo,             color:'#0a3d62' },
+      { name:'Intermediação CB Pay',val:cbpay,             color:'#d97706' },
     ];
     if(total <= 0){
       legend.innerHTML = segs.map(s => `
@@ -670,17 +699,18 @@
   }
 
   function render(){
-    let totRB=0, totTrib=0, totCMV=0, totLL=0, totQtd=0;
+    let totRB=0, totTrib=0, totCMV=0, totCBPay=0, totLL=0, totQtd=0;
     const rows = [];
 
     SKUS.forEach(s => {
-      const preco = parseNum(document.getElementById(`preco-${s.id}`).value);
-      const qtd   = parseInt0(document.getElementById(`qtd-${s.id}`).value);
+      const preco     = parseNum(document.getElementById(`preco-${s.id}`).value);
+      const qtd       = parseInt0(document.getElementById(`qtd-${s.id}`).value);
+      const cbpayPct  = parseNum(document.getElementById(`cbpay-${s.id}`).value);
       const totalCliente = preco * s.meses;
       setText(`total-cliente-${s.id}`, brl(totalCliente));
       setText(`total-cliente-sub-${s.id}`, `R$ ${fmtNum.format(preco || 0)}/mês × ${s.meses} meses`);
 
-      const r = calc(preco, s.meses, qtd, s.custo);
+      const r = calc(preco, s.meses, qtd, s.custo, cbpayPct);
 
       const blank = qtd <= 0 || preco <= 0;
       const show = (v) => blank ? '—' : brl(v);
@@ -691,20 +721,24 @@
       setText(`cof-${s.id}`, show(r.cof));
       setText(`rl-${s.id}`,  show(r.rl));
       setText(`cmv-${s.id}`, show(r.cmv));
+      setText(`cbpay-lbl-${s.id}`, `Intermediação CB Pay (${fmtNum.format(cbpayPct)}%)`);
+      setText(`cbpay-val-${s.id}`, show(r.cbpay));
       setText(`ll-${s.id}`,  blank ? '—' : brl(r.ll), { neg: r.ll < 0 });
       setText(`ml-${s.id}`,  blank ? '—' : pct(r.ml), { neg: r.ml < 0 });
 
-      totRB   += r.rb;
-      totTrib += r.iss + r.pis + r.cof;
-      totCMV  += r.cmv;
-      totLL   += r.ll;
-      totQtd  += qtd;
+      totRB    += r.rb;
+      totTrib  += r.iss + r.pis + r.cof;
+      totCMV   += r.cmv;
+      totCBPay += r.cbpay;
+      totLL    += r.ll;
+      totQtd   += qtd;
 
       rows.push({ label:s.label, meses:s.meses, ll:r.ll, ml:r.ml, qtd });
     });
 
     const trPct = totRB > 0 ? totTrib/totRB*100 : 0;
     const cuPct = totRB > 0 ? totCMV/totRB*100 : 0;
+    const cpPct = totRB > 0 ? totCBPay/totRB*100 : 0;
     const mgPct = totRB > 0 ? totLL/totRB*100 : 0;
 
     setText('c-receita',       brl(totRB));
@@ -713,10 +747,12 @@
     setText('c-tributos-pct',  `${fmtNum.format(trPct)}% da receita`);
     setText('c-custo',         brl(totCMV));
     setText('c-custo-pct',     `${fmtNum.format(cuPct)}% da receita`);
+    setText('c-cbpay',         brl(totCBPay));
+    setText('c-cbpay-pct',     `${fmtNum.format(cpPct)}% da receita`);
     setText('c-lucro',         brl(totLL));
     setText('c-margem',        `Margem ${fmtNum.format(mgPct)}%`);
 
-    renderDonut(totLL, totTrib, totCMV);
+    renderDonut(totLL, totTrib, totCMV, totCBPay);
     renderBars(rows);
 
     saveState();
@@ -727,6 +763,7 @@
       const state = SKUS.map(s => ({
         preco: document.getElementById(`preco-${s.id}`).value,
         qtd:   document.getElementById(`qtd-${s.id}`).value,
+        cbpay: document.getElementById(`cbpay-${s.id}`).value,
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }catch(e){ /* storage indisponível, ignora */ }
@@ -742,6 +779,7 @@
         if(state[i]){
           if(typeof state[i].preco === 'string') document.getElementById(`preco-${s.id}`).value = state[i].preco;
           if(typeof state[i].qtd   === 'string') document.getElementById(`qtd-${s.id}`).value   = state[i].qtd;
+          if(typeof state[i].cbpay === 'string') document.getElementById(`cbpay-${s.id}`).value = state[i].cbpay;
         }
       });
     }catch(e){ /* corrupto, ignora */ }
@@ -751,6 +789,7 @@
     SKUS.forEach(s => {
       document.getElementById(`preco-${s.id}`).value = fmtNum.format(PRECO_DEFAULT);
       document.getElementById(`qtd-${s.id}`).value   = '';
+      document.getElementById(`cbpay-${s.id}`).value = '0,00';
     });
     render();
   }
@@ -763,6 +802,10 @@
   function formatQtdOnBlur(input){
     const v = parseInt0(input.value);
     input.value = v > 0 ? fmtInt.format(v) : '';
+  }
+  function formatPctOnBlur(input){
+    const v = parseNum(input.value);
+    input.value = fmtNum.format(v);
   }
   function formatQtdLive(input){
     const cursor = input.selectionStart || 0;
@@ -788,9 +831,11 @@
   SKUS.forEach(s => {
     const p = document.getElementById(`preco-${s.id}`);
     const q = document.getElementById(`qtd-${s.id}`);
+    const c = document.getElementById(`cbpay-${s.id}`);
     p.addEventListener('blur', () => { formatPrecoOnBlur(p); render(); });
     q.addEventListener('input', () => formatQtdLive(q));
     q.addEventListener('blur', () => { formatQtdOnBlur(q); render(); });
+    c.addEventListener('blur', () => { formatPctOnBlur(c); render(); });
   });
 
   // Stepper buttons (preço ±1,00 / quantidade ±10.000)
@@ -799,7 +844,7 @@
       const target = document.getElementById(btn.dataset.target);
       if(!target) return;
       const step = parseFloat(btn.dataset.step) || 0;
-      const isDecimal = btn.dataset.target.startsWith('preco-');
+      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-');
       if(isDecimal){
         const current = parseNum(target.value);
         const next = Math.max(0, current + step);
