@@ -95,16 +95,29 @@
     font-size:14px;color:var(--primary-2);line-height:1.4;
   }
   .params{
-    display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;
+    display:grid;gap:14px 18px;
     background:var(--card);border:1px solid var(--border);
-    border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;
+    border-radius:var(--radius);padding:16px;margin-bottom:20px;
+    grid-template-columns:1fr;
   }
+  @media (min-width:680px){ .params{grid-template-columns:repeat(2,1fr)} }
+  @media (min-width:1100px){ .params{grid-template-columns:repeat(4,1fr)} }
+  .params-title{
+    grid-column:1/-1;
+    font-size:12px;font-weight:700;color:var(--text);
+    letter-spacing:.5px;text-transform:uppercase;
+    margin-bottom:-2px;
+  }
+  .param-item{display:flex;flex-direction:column;gap:6px;min-width:0}
   .param-label{
-    font-size:13px;color:var(--text-2);font-weight:600;line-height:1.3;
+    font-size:12px;color:var(--text-2);font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;line-height:1.2;
   }
-  .param-label strong{color:var(--text);font-weight:700;display:block;font-size:14px}
-  .params .stepper{min-width:0;flex:0 0 auto;width:280px}
-  @media (max-width:520px){ .params .stepper{width:100%} }
+  .param-sub{
+    display:block;font-size:11px;color:var(--text-3);font-weight:500;
+    text-transform:none;letter-spacing:0;margin-top:2px;
+  }
+  .params .stepper{min-width:0}
   .cta-icon{
     flex-shrink:0;width:32px;height:32px;border-radius:8px;
     background:var(--primary);color:#fff;
@@ -295,8 +308,8 @@
     grid-template-columns:1fr;
   }
   @media (min-width:640px){ .cons-grid{grid-template-columns:repeat(2,1fr)} }
-  @media (min-width:1024px){ .cons-grid{grid-template-columns:repeat(3,1fr)} }
-  @media (min-width:1280px){ .cons-grid{grid-template-columns:repeat(4,1fr) 1.3fr} }
+  @media (min-width:960px){ .cons-grid{grid-template-columns:repeat(3,1fr)} }
+  @media (min-width:1280px){ .cons-grid{grid-template-columns:repeat(5,1fr) 1.3fr} }
 
   .cons-card{
     background:rgba(255,255,255,.06);
@@ -414,30 +427,74 @@
     </div>
   </div>
 
-  <div class="params" aria-label="Parâmetros globais">
-    <div class="param-label">
-      <strong>Custo de aquisição (unitário)</strong>
-      Vale para todos os SKUs · editável
-    </div>
-    <div class="stepper">
-      <button class="step-btn" type="button" data-step="-1" data-target="custo-global" aria-label="Diminuir R$ 1,00" title="−R$ 1,00">−</button>
-      <div class="input-wrap">
-        <span class="input-prefix">R$</span>
-        <input class="input" id="custo-global" inputmode="decimal" type="text" value="15,00" aria-label="Custo de aquisição unitário" title="Clique para editar o custo de aquisição">
-        <span class="input-edit-icon" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-        </span>
+  <section class="params" aria-label="Parâmetros operacionais da Woli">
+    <div class="params-title">Parâmetros operacionais da Woli · editáveis</div>
+
+    <div class="param-item">
+      <label class="param-label" for="com-ext">
+        Comissão externa
+        <span class="param-sub">R$ por curso vendido</span>
+      </label>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-0.1" data-target="com-ext" aria-label="Diminuir R$ 0,10" title="−R$ 0,10">−</button>
+        <div class="input-wrap">
+          <span class="input-prefix">R$</span>
+          <input class="input" id="com-ext" inputmode="decimal" type="text" value="0,74" aria-label="Comissão externa unitária">
+        </div>
+        <button class="step-btn" type="button" data-step="0.1" data-target="com-ext" aria-label="Aumentar R$ 0,10" title="+R$ 0,10">+</button>
       </div>
-      <button class="step-btn" type="button" data-step="1" data-target="custo-global" aria-label="Aumentar R$ 1,00" title="+R$ 1,00">+</button>
     </div>
-  </div>
+
+    <div class="param-item">
+      <label class="param-label" for="whats">
+        WhatsApp
+        <span class="param-sub">R$ por curso vendido</span>
+      </label>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-0.01" data-target="whats" aria-label="Diminuir R$ 0,01" title="−R$ 0,01">−</button>
+        <div class="input-wrap">
+          <span class="input-prefix">R$</span>
+          <input class="input" id="whats" inputmode="decimal" type="text" value="0,04" aria-label="Custo de WhatsApp unitário">
+        </div>
+        <button class="step-btn" type="button" data-step="0.01" data-target="whats" aria-label="Aumentar R$ 0,01" title="+R$ 0,01">+</button>
+      </div>
+    </div>
+
+    <div class="param-item">
+      <label class="param-label" for="com-int">
+        Comissão interna
+        <span class="param-sub">% sobre Receita Bruta</span>
+      </label>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-0.1" data-target="com-int" aria-label="Diminuir 0,1 ponto percentual" title="−0,10%">−</button>
+        <div class="input-wrap">
+          <input class="input" id="com-int" inputmode="decimal" type="text" value="2,20" aria-label="Comissão interna em %">
+          <span class="input-suffix">%</span>
+        </div>
+        <button class="step-btn" type="button" data-step="0.1" data-target="com-int" aria-label="Aumentar 0,1 ponto percentual" title="+0,10%">+</button>
+      </div>
+    </div>
+
+    <div class="param-item">
+      <label class="param-label" for="custos-fixos">
+        Custos fixos
+        <span class="param-sub">R$ totais por mês</span>
+      </label>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-1000" data-target="custos-fixos" aria-label="Diminuir R$ 1.000" title="−R$ 1.000,00">−</button>
+        <div class="input-wrap">
+          <span class="input-prefix">R$</span>
+          <input class="input" id="custos-fixos" inputmode="decimal" type="text" value="205.079,00" aria-label="Custos fixos mensais">
+        </div>
+        <button class="step-btn" type="button" data-step="1000" data-target="custos-fixos" aria-label="Aumentar R$ 1.000" title="+R$ 1.000,00">+</button>
+      </div>
+    </div>
+  </section>
 
   <div class="grid" id="grid"></div>
 
   <section class="consolidado" aria-label="Resultado consolidado">
-    <div class="cons-title">Resultado consolidado · 4 SKUs</div>
+    <div class="cons-title">Resultado consolidado · operação Woli</div>
     <div class="cons-grid">
       <div class="cons-card">
         <div class="l">Receita Bruta Total</div>
@@ -450,17 +507,22 @@
         <div class="sub" id="c-tributos-pct">0,00% da receita</div>
       </div>
       <div class="cons-card">
-        <div class="l">Custo de Aquisição</div>
-        <div class="v" id="c-custo">R$ 0,00</div>
-        <div class="sub" id="c-custo-pct">0,00% da receita</div>
+        <div class="l">Custos Variáveis</div>
+        <div class="v" id="c-variaveis">R$ 0,00</div>
+        <div class="sub" id="c-variaveis-pct">0,00% da receita</div>
       </div>
       <div class="cons-card">
         <div class="l">Intermediação CB Pay</div>
         <div class="v" id="c-cbpay">R$ 0,00</div>
         <div class="sub" id="c-cbpay-pct">0,00% da receita</div>
       </div>
+      <div class="cons-card">
+        <div class="l">Custos Fixos</div>
+        <div class="v" id="c-fixos">R$ 0,00</div>
+        <div class="sub" id="c-fixos-pct">0,00% da receita</div>
+      </div>
       <div class="cons-card highlight">
-        <div class="l">Lucro Líquido Total</div>
+        <div class="l">Lucro Líquido Operacional</div>
         <div class="v" id="c-lucro">R$ 0,00</div>
         <div class="sub" id="c-margem">Margem 0,00%</div>
       </div>
@@ -478,7 +540,7 @@
       </div>
     </div>
     <div class="chart-card">
-      <h2 class="chart-title">Lucro Líquido por SKU</h2>
+      <h2 class="chart-title">Margem de Contribuição por SKU</h2>
       <div class="bars" id="bars"></div>
     </div>
   </section>
@@ -500,12 +562,17 @@
     { id:4, meses:24, precoDefault:10.40, label:"SKU 4", titulo:"24 meses de acesso" },
   ];
 
-  const CUSTO_DEFAULT = 15.00;
+  const PARAM_DEFAULTS = {
+    comExt: 0.74,
+    whats:  0.04,
+    comInt: 2.20,
+    custosFixos: 205079.00,
+  };
   const TRIB = { iss:0.05, pis:0.0165, cofins:0.076 };
 
   const padN = (n) => String(n).padStart(2, '0');
 
-  const STORAGE_KEY = "woli_cb_simulador_v4";
+  const STORAGE_KEY = "woli_cb_simulador_v5";
 
   // Formatters
   const fmtBRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
@@ -612,8 +679,16 @@
           <span class="dre-value" id="rl-${s.id}">—</span>
         </div>
         <div class="dre-row deduct">
-          <span class="dre-label">Custo de Aquisição</span>
-          <span class="dre-value" id="cmv-${s.id}">—</span>
+          <span class="dre-label">Comissão externa (R$/un)</span>
+          <span class="dre-value" id="comext-val-${s.id}">—</span>
+        </div>
+        <div class="dre-row deduct">
+          <span class="dre-label">WhatsApp (R$/un)</span>
+          <span class="dre-value" id="whats-val-${s.id}">—</span>
+        </div>
+        <div class="dre-row deduct">
+          <span class="dre-label" id="comint-lbl-${s.id}">Comissão interna (2,20%)</span>
+          <span class="dre-value" id="comint-val-${s.id}">—</span>
         </div>
         <div class="dre-row deduct">
           <span class="dre-label" id="cbpay-lbl-${s.id}">Intermediação CB Pay (0,00%)</span>
@@ -621,12 +696,12 @@
         </div>
         <div class="result">
           <div class="result-row">
-            <span class="label">Lucro Líquido</span>
-            <span class="value" id="ll-${s.id}">—</span>
+            <span class="label">Margem de Contribuição</span>
+            <span class="value" id="mc-${s.id}">—</span>
           </div>
           <div class="result-row margin">
-            <span class="label">Margem Líquida</span>
-            <span class="value" id="ml-${s.id}">—</span>
+            <span class="label">MC / RB</span>
+            <span class="value" id="mcpct-${s.id}">—</span>
           </div>
         </div>
       </div>
@@ -634,17 +709,19 @@
     grid.appendChild(card);
   });
 
-  function calc(precoMensal, meses, qtd, custoUnit, cbpayPct){
+  function calc(precoMensal, meses, qtd, params, cbpayPct){
     const rb = precoMensal * meses * qtd;
     const iss = rb * TRIB.iss;
     const pis = rb * TRIB.pis;
     const cof = rb * TRIB.cofins;
     const rl  = rb - iss - pis - cof;
-    const cmv = custoUnit * qtd;
-    const cbpay = rb * ((cbpayPct || 0) / 100);
-    const ll  = rl - cmv - cbpay;
-    const ml  = rb > 0 ? (ll / rb) * 100 : 0;
-    return { rb, iss, pis, cof, rl, cmv, cbpay, ll, ml };
+    const comExt = (params.comExt || 0) * qtd;
+    const whats  = (params.whats  || 0) * qtd;
+    const comInt = rb * ((params.comIntPct || 0) / 100);
+    const cbpay  = rb * ((cbpayPct || 0) / 100);
+    const mc = rl - comExt - whats - comInt - cbpay;
+    const mcPct = rb > 0 ? (mc / rb) * 100 : 0;
+    return { rb, iss, pis, cof, rl, comExt, whats, comInt, cbpay, mc, mcPct };
   }
 
   function setText(id, value, opts={}){
@@ -657,8 +734,8 @@
   }
 
   // Donut chart (consolidado)
-  function renderDonut(lucro, tributos, custo, cbpay){
-    const total = Math.max(lucro,0) + tributos + custo + cbpay;
+  function renderDonut(lucro, tributos, variaveis, cbpay, fixos){
+    const total = Math.max(lucro,0) + tributos + variaveis + cbpay + fixos;
     const svg = document.getElementById('donut');
     const legend = document.getElementById('donut-legend');
     // Clear existing arcs
@@ -667,10 +744,11 @@
     const C = 2 * Math.PI * r;
     let offset = 0;
     const segs = [
-      { name:'Lucro Líquido Woli',  val:Math.max(lucro,0), color:'#15803d' },
+      { name:'Lucro Operacional',   val:Math.max(lucro,0), color:'#15803d' },
       { name:'Tributos',            val:tributos,          color:'#b91c1c' },
-      { name:'Custo de Aquisição',  val:custo,             color:'#0a3d62' },
+      { name:'Custos Variáveis',    val:variaveis,         color:'#0a3d62' },
       { name:'Intermediação CB Pay',val:cbpay,             color:'#d97706' },
+      { name:'Custos Fixos',        val:fixos,             color:'#475569' },
     ];
     if(total <= 0){
       legend.innerHTML = segs.map(s => `
@@ -705,19 +783,20 @@
     }).join('');
   }
 
-  // Horizontal bars (lucro líquido por SKU)
+  // Horizontal bars (margem de contribuição por SKU)
   function renderBars(rows){
-    const max = Math.max(1, ...rows.map(r => Math.abs(r.ll)));
+    const max = Math.max(1, ...rows.map(r => Math.abs(r.mc)));
     const el = document.getElementById('bars');
     el.innerHTML = rows.map(r => {
-      const w = Math.min(100, Math.abs(r.ll) / max * 100);
-      const cls = r.ll < 0 ? 'neg' : '';
+      const w = Math.min(100, Math.abs(r.mc) / max * 100);
+      const cls = r.mc < 0 ? 'neg' : '';
       const blank = r.qtd <= 0;
-      const valTxt = blank ? '—' : `${brl(r.ll)} <span class="bar-pct">· ${pct(r.ml)}</span>`;
+      const mesesTxt = r.meses === 1 ? '1m' : `${r.meses}m`;
+      const valTxt = blank ? '—' : `${brl(r.mc)} <span class="bar-pct">· ${pct(r.mcPct)}</span>`;
       return `
         <div class="bar-row">
           <div class="bar-head">
-            <span class="name">${r.label} · ${r.meses}m</span>
+            <span class="name">${r.label} · ${mesesTxt}</span>
             <span class="val ${cls}">${valTxt}</span>
           </div>
           <div class="bar-track"><div class="bar-fill ${cls}" style="width:${w}%"></div></div>
@@ -726,10 +805,15 @@
   }
 
   function render(){
-    let totRB=0, totTrib=0, totCMV=0, totCBPay=0, totLL=0, totQtd=0;
+    let totRB=0, totTrib=0, totVar=0, totCBPay=0, totMC=0, totQtd=0;
     const rows = [];
 
-    const custoGlobal = parseNum(document.getElementById('custo-global').value);
+    const params = {
+      comExt:   parseNum(document.getElementById('com-ext').value),
+      whats:    parseNum(document.getElementById('whats').value),
+      comIntPct:parseNum(document.getElementById('com-int').value),
+    };
+    const custosFixos = parseNum(document.getElementById('custos-fixos').value);
 
     SKUS.forEach(s => {
       const preco     = parseNum(document.getElementById(`preco-${s.id}`).value);
@@ -739,7 +823,7 @@
       setText(`total-cliente-${s.id}`, brl(totalCliente));
       setText(`total-cliente-sub-${s.id}`, `R$ ${fmtNum.format(preco || 0)}/mês × ${s.meses} ${s.meses === 1 ? 'mês' : 'meses'}`);
 
-      const r = calc(preco, s.meses, qtd, custoGlobal, cbpayPct);
+      const r = calc(preco, s.meses, qtd, params, cbpayPct);
 
       const blank = qtd <= 0 || preco <= 0;
       const show = (v) => blank ? '—' : brl(v);
@@ -749,39 +833,46 @@
       setText(`pis-${s.id}`, show(r.pis));
       setText(`cof-${s.id}`, show(r.cof));
       setText(`rl-${s.id}`,  show(r.rl));
-      setText(`cmv-${s.id}`, show(r.cmv));
-      setText(`cbpay-lbl-${s.id}`, `Intermediação CB Pay (${fmtNum.format(cbpayPct)}%)`);
-      setText(`cbpay-val-${s.id}`, show(r.cbpay));
-      setText(`ll-${s.id}`,  blank ? '—' : brl(r.ll), { neg: r.ll < 0 });
-      setText(`ml-${s.id}`,  blank ? '—' : pct(r.ml), { neg: r.ml < 0 });
+      setText(`comext-val-${s.id}`, show(r.comExt));
+      setText(`whats-val-${s.id}`,  show(r.whats));
+      setText(`comint-lbl-${s.id}`, `Comissão interna (${fmtNum.format(params.comIntPct)}%)`);
+      setText(`comint-val-${s.id}`, show(r.comInt));
+      setText(`cbpay-lbl-${s.id}`,  `Intermediação CB Pay (${fmtNum.format(cbpayPct)}%)`);
+      setText(`cbpay-val-${s.id}`,  show(r.cbpay));
+      setText(`mc-${s.id}`,         blank ? '—' : brl(r.mc), { neg: r.mc < 0 });
+      setText(`mcpct-${s.id}`,      blank ? '—' : pct(r.mcPct), { neg: r.mcPct < 0 });
 
       totRB    += r.rb;
       totTrib  += r.iss + r.pis + r.cof;
-      totCMV   += r.cmv;
+      totVar   += r.comExt + r.whats + r.comInt;
       totCBPay += r.cbpay;
-      totLL    += r.ll;
+      totMC    += r.mc;
       totQtd   += qtd;
 
-      rows.push({ label:s.label, meses:s.meses, ll:r.ll, ml:r.ml, qtd });
+      rows.push({ label:s.label, meses:s.meses, mc:r.mc, mcPct:r.mcPct, qtd });
     });
 
+    const lucroOp = totMC - custosFixos;
     const trPct = totRB > 0 ? totTrib/totRB*100 : 0;
-    const cuPct = totRB > 0 ? totCMV/totRB*100 : 0;
+    const vrPct = totRB > 0 ? totVar/totRB*100 : 0;
     const cpPct = totRB > 0 ? totCBPay/totRB*100 : 0;
-    const mgPct = totRB > 0 ? totLL/totRB*100 : 0;
+    const fxPct = totRB > 0 ? custosFixos/totRB*100 : 0;
+    const mgPct = totRB > 0 ? lucroOp/totRB*100 : 0;
 
     setText('c-receita',       brl(totRB));
     setText('c-volume',        `${fmtInt.format(totQtd)} ${totQtd === 1 ? 'unidade vendida' : 'unidades vendidas'}`);
     setText('c-tributos',      brl(totTrib));
     setText('c-tributos-pct',  `${fmtNum.format(trPct)}% da receita`);
-    setText('c-custo',         brl(totCMV));
-    setText('c-custo-pct',     `${fmtNum.format(cuPct)}% da receita`);
+    setText('c-variaveis',     brl(totVar));
+    setText('c-variaveis-pct', `${fmtNum.format(vrPct)}% da receita`);
     setText('c-cbpay',         brl(totCBPay));
     setText('c-cbpay-pct',     `${fmtNum.format(cpPct)}% da receita`);
-    setText('c-lucro',         brl(totLL));
-    setText('c-margem',        `Margem ${fmtNum.format(mgPct)}%`);
+    setText('c-fixos',         brl(custosFixos));
+    setText('c-fixos-pct',     totRB > 0 ? `${fmtNum.format(fxPct)}% da receita` : 'sem receita ainda');
+    setText('c-lucro',         brl(lucroOp), { neg: lucroOp < 0 });
+    setText('c-margem',        totRB > 0 ? `Margem ${fmtNum.format(mgPct)}%` : 'Margem —', { neg: mgPct < 0 });
 
-    renderDonut(totLL, totTrib, totCMV, totCBPay);
+    renderDonut(lucroOp, totTrib, totVar, totCBPay, custosFixos);
     renderBars(rows);
 
     saveState();
@@ -790,7 +881,12 @@
   function saveState(){
     try{
       const state = {
-        custoGlobal: document.getElementById('custo-global').value,
+        params: {
+          comExt:      document.getElementById('com-ext').value,
+          whats:       document.getElementById('whats').value,
+          comInt:      document.getElementById('com-int').value,
+          custosFixos: document.getElementById('custos-fixos').value,
+        },
         skus: SKUS.map(s => ({
           preco: document.getElementById(`preco-${s.id}`).value,
           qtd:   document.getElementById(`qtd-${s.id}`).value,
@@ -807,8 +903,12 @@
       if(!raw) return;
       const state = JSON.parse(raw);
       if(!state || !Array.isArray(state.skus)) return;
-      if(typeof state.custoGlobal === 'string'){
-        document.getElementById('custo-global').value = state.custoGlobal;
+      if(state.params){
+        const setIfStr = (id, v) => { if(typeof v === 'string') document.getElementById(id).value = v; };
+        setIfStr('com-ext',      state.params.comExt);
+        setIfStr('whats',        state.params.whats);
+        setIfStr('com-int',      state.params.comInt);
+        setIfStr('custos-fixos', state.params.custosFixos);
       }
       SKUS.forEach((s,i) => {
         const item = state.skus[i];
@@ -822,7 +922,10 @@
   }
 
   function reset(){
-    document.getElementById('custo-global').value = fmtNum.format(CUSTO_DEFAULT);
+    document.getElementById('com-ext').value      = fmtNum.format(PARAM_DEFAULTS.comExt);
+    document.getElementById('whats').value        = fmtNum.format(PARAM_DEFAULTS.whats);
+    document.getElementById('com-int').value      = fmtNum.format(PARAM_DEFAULTS.comInt);
+    document.getElementById('custos-fixos').value = fmtNum.format(PARAM_DEFAULTS.custosFixos);
     SKUS.forEach(s => {
       document.getElementById(`preco-${s.id}`).value = fmtNum.format(s.precoDefault);
       document.getElementById(`qtd-${s.id}`).value   = '';
@@ -874,12 +977,18 @@
     q.addEventListener('blur', () => { formatQtdOnBlur(q); render(); });
     c.addEventListener('blur', () => { formatPctOnBlur(c); render(); });
   });
-  const cg = document.getElementById('custo-global');
-  cg.addEventListener('blur', () => {
-    const v = parseNum(cg.value);
-    cg.value = v > 0 ? fmtNum.format(v) : fmtNum.format(CUSTO_DEFAULT);
-    render();
-  });
+  const bindParam = (id, defaultVal) => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur', () => {
+      const v = parseNum(el.value);
+      el.value = v > 0 ? fmtNum.format(v) : fmtNum.format(defaultVal);
+      render();
+    });
+  };
+  bindParam('com-ext',      PARAM_DEFAULTS.comExt);
+  bindParam('whats',        PARAM_DEFAULTS.whats);
+  bindParam('com-int',      PARAM_DEFAULTS.comInt);
+  bindParam('custos-fixos', PARAM_DEFAULTS.custosFixos);
 
   // Stepper buttons (preço ±1,00 / quantidade ±10.000)
   document.querySelectorAll('.step-btn').forEach(btn => {
@@ -887,7 +996,8 @@
       const target = document.getElementById(btn.dataset.target);
       if(!target) return;
       const step = parseFloat(btn.dataset.step) || 0;
-      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-') || btn.dataset.target === 'custo-global';
+      const decimalTargets = new Set(['com-ext','whats','com-int','custos-fixos']);
+      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-') || decimalTargets.has(btn.dataset.target);
       if(isDecimal){
         const current = parseNum(target.value);
         const next = Math.max(0, current + step);
